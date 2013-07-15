@@ -1,0 +1,179 @@
+/* General style */
+/* Using color scheme:
+ * http://colorschemedesigner.com/#3qa2PnY--w0w0
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font: 10pt Verdana, sans-serif;
+    background-color: #F7FBFF;
+}
+
+a {
+    color: #0066CC;
+    cursor: pointer;
+}
+
+a:hover {
+    color: #0059B3;
+}
+
+a:active {
+    color: #004D99;
+}
+
+/* Header layout */
+div#header {
+    border-bottom: 2px solid #003366;
+}
+
+#header a {
+    font-weight: bold;
+}
+
+div#title {
+    height: 15%;
+    position: relative;
+    border-bottom: 2px solid #003366;
+
+    background-color: #E6F2FF;
+    /* gradients for funsies */
+    background-image: linear-gradient(45deg, #E6F2FF 25%, #99CCFF 75%);
+    background-image: -moz-linear-gradient(45deg, #E6F2FF 25%, #99CCFF 75%);
+    background-image: -ms-linear-gradient(45deg, #E6F2FF 25%, #99CCFF 75%);
+    background-image: -webkit-linear-gradient(45deg, #E6F2FF 25%, #99CCFF 75%);
+}
+
+div#title span { /* title of forum */
+    position: absolute;
+        left: 4px;
+        bottom: 2px;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 14pt;
+    color: #003366;
+}
+
+div#userinfo {
+    position: relative;
+    height: 2em;
+    background-color: #E6F2FF;
+}
+
+div#userinfo #proflinks {
+    position: absolute;
+        left: 4px;
+    line-height: 2em;
+}
+
+div#userinfo #loginlinks {
+    position: absolute;
+        right: 4px;
+    text-align: right;
+    line-height: 2em;
+}
+
+#userinfo li {
+    display: inline;
+}
+
+#userinfo li + li::before {
+    content: " | ";
+}
+
+/* Forum/Thread List styling */
+div#forums, div#threads {
+    width: 90%;
+    margin: 0 auto;
+    padding: 1%;
+}
+
+table.list {
+    border: 2px solid #003366;
+    border-top: none;
+    width: 100%;
+
+    border-radius: 0 0 10px 10px;
+    background-color: #E6F2FF;
+    padding: 2px 10px;
+}
+
+table.list caption {
+    border: 2px solid #003366;
+    text-align: left;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 12pt;
+    padding: 3px;
+
+    color: #003366;
+    background-color: #CCE6FF;
+
+    border-top-right-radius: 1em;
+}
+
+table.list thead th {
+    color: #003366;
+    border-bottom: 2px solid #99CCFF;
+    font-size: 10pt;
+}
+
+table.list tbody td {
+    border: 1px solid #99CCFF;
+    border-bottom-width: 2px;
+    border-top: none;
+
+    padding: 2px;
+    font-size: 10pt;
+}
+
+#forums table.list tbody td:first-child { /* forum description */
+    border-left-width: 2px;
+}
+
+#forums table.list tbody td:last-child,
+#threads table.list tbody td:last-child { /* last post */
+    border-right-width: 2px;
+    width: 20%;
+    font-size: 9pt;
+}
+
+#threads table.list tbody td:first-child {
+    border-left-width: 2px;
+}
+
+#threads table.list tbody td:nth-child(2) { /* author */
+    text-align: center;
+    width: 12.5%;
+}
+
+#forums table.list tbody td:nth-child(2), /* threads */
+#threads table.list tbody td:nth-child(3) { /* replies */
+    width: 7.5%;
+    text-align: center;
+}
+
+/* stripes */
+table.list tbody tr:nth-child(odd) td {
+    background-color: #CCE6FF;
+}
+
+tr.forum h1 {
+    font-size: 11pt;
+    line-height: 11pt;
+    display: inline;
+}
+
+table.list tfoot td {
+    text-align: right;
+    font-size: 9pt;
+    font-style: italic;
+
+    /* fix curved borders */
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
