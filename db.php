@@ -20,7 +20,7 @@ function process_error($e) {
     return $error_msg;
 }
 
-function forum_list($DBH) {
+function forum_list($DBH, $_config) {
     try {
         // Get thread count
         $STH = $DBH->prepare("SELECT forum_id, COUNT(*) AS num_threads FROM threads GROUP BY forum_id");
@@ -57,7 +57,10 @@ function forum_list($DBH) {
             return 'no_forum_groups';
         }
 
-        $result = array();
+        $result = new stdClass();
+        $result->forum_groups = array();
+        $result->group_order = $_config->get("forum.group_order");
+        $result->forum_order = $_config->get("forum.forum_order");
 
         $forum_groups = $STH->fetchAll(PDO::FETCH_OBJ);
         foreach($forum_groups as $forum_group) {
@@ -70,12 +73,12 @@ function forum_list($DBH) {
             $forums = $STH->fetchAll(PDO::FETCH_OBJ);
 
             foreach($forums as $forum) {
-                $forum_group->forums[] = $forum;
+                $forum_group->forums[$forum->id] = $forum;
                 $forum->num_threads = (array_key_exists($forum->id, $thread_counts)) ? $thread_counts[$forum->id] : 0;
                 $forum->last_post = (array_key_exists($forum->id, $last_posts)) ? $last_posts[$forum->id] : null;
             }
 
-            $result[] = $forum_group;
+            $result->forum_groups[$forum_group->id] = $forum_group;
         }
 
         return $result;
@@ -87,7 +90,7 @@ function forum_list($DBH) {
 $result = null;
 switch($query) {
     case "forums":
-        $result = forum_list($DBH);
+        $result = forum_list($DBH, $_config);
         break;
     default:
         exit;
