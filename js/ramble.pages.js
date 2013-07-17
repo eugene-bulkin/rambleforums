@@ -42,6 +42,8 @@ var Pages = {
                                 row.append('<td>by <a>' + lastp.uname + '</a><br /><span class="date">' + lastp.date + '</span></td>');
                             }
                             tbody.append(row);
+
+                            thread_count += Number(forum.num_threads);
                         }
                         table.append(tbody);
 
