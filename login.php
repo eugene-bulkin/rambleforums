@@ -91,24 +91,25 @@ function process_login($DBH) {
         $STH->execute(array($user->id));
 
         return true;
-
     } catch (PDOException $e) {
         return process_error($e);
     }
 }
 
+$result = null;
 switch($mode) {
     case "register":
-        print json_encode(process_registration($DBH));
+        $result = process_registration($DBH);
         break;
     case "login":
-        print json_encode(process_login($DBH));
+        $result = process_login($DBH);
         break;
     case "logout":
         session_destroy();
-        print json_encode(true);
+        $result = true;
         break;
     default:
         break;
 }
+print json_encode($result);
 ?>

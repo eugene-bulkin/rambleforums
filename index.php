@@ -1,5 +1,6 @@
 <?php
 require 'config.inc.php';
+session_start();
 
 function logged_in() {
     return array_key_exists("user_id", $_SESSION);
@@ -32,8 +33,6 @@ Not logged in. Please login or register to participate.
 <?php
     }
 }
-
-session_start();
 ?>
 <html>
     <head>

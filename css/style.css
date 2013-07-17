@@ -102,6 +102,10 @@ table.list {
     padding: 2px 10px;
 }
 
+table.list + table.list {
+    margin-top: 20px;
+}
+
 table.list caption {
     border: 2px solid #003366;
     text-align: left;
@@ -153,7 +157,7 @@ table.list tbody td {
 
 #forums table.list tbody td:nth-child(2), /* threads */
 #threads table.list tbody td:nth-child(3) { /* replies */
-    width: 7.5%;
+    width: 60px;
     text-align: center;
 }
 
