@@ -1,5 +1,5 @@
 $(function () {
     Login.init();
 
-    Pages.load("forums", "#page");
+    Pages.load("group_order", "#page");
 });

@@ -6,6 +6,7 @@ $query = array_key_exists('query', $_GET) ? $_GET['query'] : null;
 if(!$query) {
     exit;
 }
+$qdata = array_key_exists('data', $_GET) ? $_GET['data'] : null;
 
 function process_error($e) {
     $error_msg = "";
@@ -87,10 +88,23 @@ function forum_list($DBH, $_config) {
     }
 }
 
+function get_config($keyids, $_config) {
+    $result = array();
+    foreach($keyids as $k) {
+        $result[$k] = $_config->get($k);
+    }
+    return $result;
+}
+
 $result = null;
 switch($query) {
     case "forums":
         $result = forum_list($DBH, $_config);
+        break;
+    case "config":
+        if($qdata === null) // don't do anything with no data
+            break;
+        $result = get_config(explode(";", $qdata), $_config);
         break;
     default:
         exit;

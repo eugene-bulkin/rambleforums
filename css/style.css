@@ -29,6 +29,7 @@ a:active {
 /* Header layout */
 div#header {
     border-bottom: 2px solid #003366;
+    margin-bottom: 4px;
 }
 
 #header a {
@@ -180,4 +181,51 @@ table.list tfoot td {
     /* fix curved borders */
     border-bottom-right-radius: 8px;
     border-bottom-left-radius: 8px;
+}
+
+/** Forum Group Sorter **/
+#group_order {
+    text-align: center;
+}
+
+#group_order div.fgroup {
+    display: inline-block;
+    margin: 0 10px;
+    border: 2px solid #003366;
+    border-radius: 8px;
+    border-top-left-radius: 0px;
+    width: 400px;
+    vertical-align: top;
+    min-height: 250px;
+    text-align: left;
+}
+
+div.fgroup .fgname {
+    border-bottom: 2px solid #003366;
+    background-color: #E6F2FF;
+    overflow: hidden;
+    width: 100%;
+    border-top-right-radius: 6px;
+    position: relative;
+    padding: 2px 0;
+}
+
+.fgname span {
+    font-size: 12pt;
+    font-weight: bold;
+    position: relative;
+        left: 2px;
+}
+
+#group_order div.fgroup ul {
+    list-style-type: none;
+    margin: 4px 12px;
+    min-height: 200px;
+}
+
+#group_order div.fgroup li {
+    display: block;
+    padding: 4px;
+    margin: 8px;
+    cursor: default;
 }
