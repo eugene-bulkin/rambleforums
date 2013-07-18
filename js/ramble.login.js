@@ -1,16 +1,16 @@
+/*jslint browser: true, devel: true, plusplus: true, indent: 4, unparam: true */
+/*globals $: false, Pages: false, Config: false, Login: false */
 var Login = {
     init: function () {
+        "use strict";
         // Allow enter to submit form in jQuery UI Dialog
         // From http://stackoverflow.com/a/13522434/28429
-        $(document).delegate('.ui-dialog', 'keyup', function(e) {
-            var tagName= e.target.tagName.toLowerCase();
+        $(document).delegate('.ui-dialog', 'keyup', function (e) {
+            var tagName = e.target.tagName.toLowerCase();
 
-            tagName= (tagName == 'input' && e.target.type == 'button') ? 'button' : tagName;
+            tagName = (tagName === 'input' && e.target.type === 'button') ? 'button' : tagName;
 
-            if (e.which == $.ui.keyCode.ENTER &&
-                tagName != 'textarea' &&
-                tagName != 'select'
-                && tagName != 'button') {
+            if (e.which === $.ui.keyCode.ENTER && tagName !== 'textarea' && tagName !== 'select' && tagName !== 'button') {
                 $(this).find('.ui-dialog-buttonset button').eq(0).trigger('click');
 
                 return false;
@@ -28,13 +28,15 @@ var Login = {
         modal: true,
         draggable: false,
         close: function (e, ui) {
+            "use strict";
             $(this).dialog("destroy");
         }
     },
 
     log_success: function (data) {
+        "use strict";
         // successful login
-        if(data === true) {
+        if (data === true) {
             $('#dialog').dialog("close");
         } else {
             console.log(data);
@@ -42,22 +44,28 @@ var Login = {
     },
 
     login: {
-        dialog: function(e, ui) {
+        dialog: function (e, ui) {
+            "use strict";
             var d = $('<div id="dialog"></div>'),
                 f = $('<form></form>'),
                 login_form = "",
-                login_buttons = { "Login": Login.login.process },
-                opts = $.extend({ buttons: login_buttons } ,Login.dialog_opts);
+                login_buttons = {
+                    "Login": Login.login.process
+                },
+                opts = $.extend({
+                    buttons: login_buttons
+                }, Login.dialog_opts);
             login_form += '<label for="username">Username</label>';
             login_form += '<input type="text" name="username">';
             login_form += '<label for="password">Password</label>';
             login_form += '<input type="password" name="password">';
             f.append(login_form);
             d.append(f);
-            var dialog = d.dialog(opts);
+            d.dialog(opts);
             d.dialog("open");
         },
-        process: function(e, ui) {
+        process: function (e, ui) {
+            "use strict";
             var form = $(this).children('form');
             form.ajaxSubmit({
                 dataType: "json",
@@ -69,14 +77,15 @@ var Login = {
     },
 
     logout: {
-        process: function(e, ui) {
+        process: function (e, ui) {
+            "use strict";
             $.ajax({
                 type: "POST",
                 url: "login.php?mode=logout",
                 dataType: "json",
                 success: function (data) {
-                    if(data === true) {
-                        location.href = location.href;
+                    if (data === true) {
+                        location.reload();
                     }
                 }
             });
@@ -84,22 +93,28 @@ var Login = {
     },
 
     register: {
-        dialog: function(e, ui) {
+        dialog: function (e, ui) {
+            "use strict";
             var d = $('<div id="dialog"></div>'),
                 f = $('<form></form>'),
                 register_form = "",
-                reg_buttons = { "Create Account": Login.register.process },
-                opts = $.extend({ buttons: reg_buttons }, Login.dialog_opts);
+                reg_buttons = {
+                    "Create Account": Login.register.process
+                },
+                opts = $.extend({
+                    buttons: reg_buttons
+                }, Login.dialog_opts);
             register_form += '<label for="username">Username</label>';
             register_form += '<input type="text" name="username">';
             register_form += '<label for="password">Password</label>';
             register_form += '<input type="password" name="password">';
             f.append(register_form);
             d.append(f);
-            var dialog = d.dialog(opts);
+            d.dialog(opts);
             d.dialog("open");
         },
-        process: function(e, ui) {
+        process: function (e, ui) {
+            "use strict";
             var form = $(this).children('form');
             form.ajaxSubmit({
                 dataType: "json",

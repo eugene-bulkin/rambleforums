@@ -3,11 +3,11 @@ require 'config.inc.php';
 session_start();
 
 function logged_in() {
-    return array_key_exists("user_id", $_SESSION);
+    return array_key_exists( "user_id", $_SESSION );
 }
 
 function print_login_links() {
-    if(logged_in()) {
+    if ( logged_in() ) {
 ?>
 <li><a id="logoutlink">Logout</a></li>
 <?php
@@ -20,7 +20,7 @@ function print_login_links() {
 }
 
 function print_profile_info() {
-    if(logged_in()) {
+    if ( logged_in() ) {
 ?>
 <ul>
     <li><a>Username</a></li>
