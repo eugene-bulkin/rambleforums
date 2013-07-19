@@ -4,5 +4,5 @@ $(function () {
     "use strict";
     Login.init();
 
-    Pages.load("group_order", "#page");
+    Pages.load("forums", "#page");
 });

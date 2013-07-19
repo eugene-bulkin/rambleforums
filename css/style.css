@@ -183,6 +183,18 @@ table.list tfoot td {
     border-bottom-left-radius: 8px;
 }
 
+#pagelinks {
+    list-style-type: none;
+}
+
+#pagelinks li {
+    display: inline;
+}
+
+#pagelinks li + li::before {
+    content: " ";
+}
+
 /** Forum Group Sorter **/
 #group_order {
     text-align: center;
