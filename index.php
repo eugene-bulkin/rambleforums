@@ -36,7 +36,7 @@ Not logged in. Please login or register to participate.
 ?>
 <html>
     <head>
-        <title>Ramble Forums</title>
+        <title><?php echo $_config->get('ramble.forum_name'); ?></title>
 
         <!-- jQuery -->
         <script src="js/jquery.js" type="text/javascript"></script>
@@ -62,7 +62,7 @@ Not logged in. Please login or register to participate.
     <body>
         <div id="header">
             <div id="title">
-                <span>Forum title</span>
+                <span><?php echo $_config->get('ramble.forum_name'); ?></span>
             </div>
             <div id="userinfo">
                 <span id="proflinks">
