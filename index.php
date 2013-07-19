@@ -62,7 +62,7 @@ Not logged in. Please login or register to participate.
     <body>
         <div id="header">
             <div id="title">
-                <span><?php echo $_config->get('ramble.forum_name'); ?></span>
+                <a><?php echo $_config->get('ramble.forum_name'); ?></a>
             </div>
             <div id="userinfo">
                 <span id="proflinks">

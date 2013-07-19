@@ -4,5 +4,9 @@ $(function () {
     "use strict";
     Login.init();
 
+    $('#title a').on('click', function () {
+        Pages.load("forums", "#page");
+    });
+
     Pages.load("forums", "#page");
 });
