@@ -53,14 +53,14 @@ function thread_list( $options, $DBH, $_config ) {
             $obj = new stdClass();
             $obj->id = $row->id;
             $obj->title = $row->title;
-            $obj->date = date_format( date_create_from_format( "Y-m-d H:i:s", $row->date_posted ), "F g, Y h:i:s A" );
+            $obj->date = date_format( date_create_from_format( "Y-m-d H:i:s", $row->date_posted ), "F d, Y h:i:s A" );
             $obj->posts = $row->num_posts;
             $obj->uid = $row->user_id;
             $obj->uname = $row->username;
             if ( $RES->id !== null ) {
                 $obj->last_post = new stdClass();
                 $obj->last_post->id = $RES->id;
-                $obj->last_post->date = date_format( date_create_from_format( "Y-m-d H:i:s", $RES->date_posted ), "F g, Y h:i:s A" );
+                $obj->last_post->date = date_format( date_create_from_format( "Y-m-d H:i:s", $RES->date_posted ), "F d, Y h:i:s A" );
                 $obj->last_post->uid = $row->user_id;
                 $obj->last_post->uname = $row->username;
             } else {
@@ -110,7 +110,7 @@ function forum_list( $DBH, $_config ) {
             $obj->uid = $row->user_id;
             $obj->uname = $row->username;
             // format date differently
-            $obj->date = date_format( date_create_from_format( "Y-m-d H:i:s", $row->date_posted ), "F g, Y h:i:s A" );
+            $obj->date = date_format( date_create_from_format( "Y-m-d H:i:s", $row->date_posted ), "F d, Y h:i:s A" );
             $last_posts[$row->forum_id] = $obj;
         }
 
