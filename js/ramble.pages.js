@@ -262,6 +262,9 @@ var Pages = {
 
     load: function (mode, element, options) {
         "use strict";
+
+        var state = {'mode': mode, 'element': element, 'options': options};
+
         switch (mode) {
         case "forums":
             $(element).html(Pages.forums());
@@ -275,5 +278,19 @@ var Pages = {
         default:
             break;
         }
+
+        // add to history
+        if(history.state !== null) {
+            history.pushState(state);
+        } else {
+            history.replaceState(state);
+
+            $(window).on('popstate', Pages.processHistory);
+        }
+    },
+
+    processHistory: function (event) {
+        var s = event.originalEvent.state;
+        Pages.load(s.mode, s.element, s.options);
     }
 };
