@@ -110,7 +110,7 @@ var Pages = {
 
                 $(data.threads).each(function () {
                     row = $('<tr class="thread">');
-                    row.append("<td>" + this.title + "</td>");
+                    row.append('<td><a class="thread_link">' + this.title + "</a></td>");
                     row.append("<td><a>" + this.uname + "</a></td>");
                     row.append("<td>" + this.posts + "</td>");
                     // if there is a last post, say so; else it is the thread itself
@@ -121,6 +121,12 @@ var Pages = {
                     }
 
                     tbody.append(row);
+
+                    row.find('.thread_link').on('click', null, this.id, function (e) {
+                        Pages.load("thread", "#page", {
+                                thread_id: e.data
+                        });
+                    });
                 });
 
                 table.append(tbody);
@@ -260,6 +266,72 @@ var Pages = {
         return html;
     },
 
+    thread: function (options) {
+        "use strict";
+        var html = $('<div id="thread"></div>'),
+            defaults = {
+                page: 1,
+                pp: 5,
+                thread_id: 1
+            },
+            opts = $.extend(defaults, options);
+        $.ajax({
+            url: "db.php",
+            data: {
+                query: "thread",
+                data: JSON.stringify(opts)
+            },
+            dataType: "json",
+            beforeSend: function () {
+                // add loading gif
+                html.css('text-align', 'center');
+                html.html('<img src="images/loading.gif" />');
+            },
+            success: function (data) {
+                var thread_body = $('<div id="thread_body">'),
+                    posts = $('<div id="posts">'),
+                    user_box, user_table;
+                // remove loading gif
+                html.html('');
+                html.attr('style', null);
+                // thread first post
+                // create user box
+                user_box = $('<div class="user_box">');
+                user_box.append('<span class="username">' + data.uname + '</span>');
+                user_table = $('<table class="user_data">');
+                user_table.append('<tr><th>Member since</th><td>' + data.ujoined + '</td></tr>');
+                user_table.append('<tr><th>Total posts</th><td>' + data.uposts + '</td></tr>');
+                user_box.append(user_table);
+                thread_body.append(user_box);
+                // create post body
+                thread_body.append('<div class="post_title"><span>' + data.title + '</span></div>');
+                thread_body.append('<div class="post_body"><span>' + data.body + '</span></div>');
+                thread_body.append('<div class="post_foot"><span class="date_posted">Posted on ' + data.date + '</span></div>');
+                // get posts
+                $(data.posts).each(function () {
+                    var post = $('<div class="post">'),
+                        user_box, user_table;
+                    // create user box
+                    user_box = $('<div class="user_box">');
+                    user_box.append('<span class="username">' + this.uname + '</span>');
+                    user_table = $('<table class="user_data">');
+                    user_table.append('<tr><th>Member since</th><td>' + this.ujoined + '</td></tr>');
+                    user_table.append('<tr><th>Total posts</th><td>' + this.uposts + '</td></tr>');
+                    user_box.append(user_table);
+                    post.append(user_box);
+                    // create post body
+                    post.append('<div class="post_body"><span>' + this.body + '</span></div>');
+                    post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date + '</span></div>');
+                    posts.append(post);
+                });
+                html.append(thread_body);
+                html.append(posts);
+            }
+        });
+
+        return html;
+    },
+
     load: function (mode, element, options) {
         "use strict";
 
@@ -271,6 +343,9 @@ var Pages = {
             break;
         case "threads":
             $(element).html(Pages.threads(options));
+            break;
+        case "thread":
+            $(element).html(Pages.thread(options));
             break;
         case "group_order":
             $(element).html(Pages.group_order());

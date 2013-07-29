@@ -291,16 +291,107 @@ div.fgroup .fgname {
 
 /* Thread display */
 #thread {
-    width: 90%;
+    width: 93.75%;
     margin: 0 auto;
 }
 #thread_body {
-    height: 30%;
+    height: 250px;
     border: 2px solid #003366;
     background-color: #E6F2FF;
     border-radius: 8px;
     border-top-left-radius: 0px;
 }
+
+div.user_box {
+    border-right: 2px solid #003366;
+    height: 100%;
+    float: left;
+
+    text-align: center;
+}
+
+.user_box span.username {
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+.user_box table {
+    width: 90%;
+    font-size: 9pt;
+    margin: 0 auto;
+}
+
+.user_box table th {
+    text-align: right;
+    padding-right: 2px;
+}
+
+.user_box table th::after {
+    content: ":";
+}
+
+div.post_body {
+    height: 100%;
+    float: right;
+}
+
+div.post_title, div.post_foot {
+    float: right;
+}
+
+#thread_body .user_box {
+    width: 18%;
+}
+
+#thread_body .post_body {
+    width: calc(82% - 6px);
+    padding: 2px;
+    height: calc(82% - 4px);
+}
+#thread_body .post_title {
+    width: calc(82% - 6px);
+    padding: 2px;
+    height: calc(10% - 4px);
+    border-bottom: 2px solid #003366;
+}
+
+#thread_body .post_foot {
+    padding: 2px;
+    width: calc(82% - 6px - 24px);
+    height: calc(8% - 4px);
+    font-size: 100%;
+    line-height: 100%;
+    text-align: right;
+    padding-right: 24px;
+}
+
+.post {
+    height: 250px;
+}
+
+.post .user_box {
+    width: calc(.18 * (100% + 30px) - 10px); /* make borders align */
+}
+
+.post .post_body {
+    padding: 2px;
+    width: calc(82% - 6px);
+    height: calc(92% - 4px);
+}
+
+.post .post_foot {
+    padding: 2px;
+    width: calc(82% - 6px);
+    height: calc(8% - 4px);
+    font-size: 100%;
+    line-height: 100%;
+    text-align: right;
+}
+
+.post + .post {
+    border-top: 2px solid #003366;
+}
+
 #posts {
     max-height: 45%;
     border: 2px solid #003366;
@@ -316,15 +407,16 @@ div.fgroup .fgname {
 }
 
 #posts::-webkit-scrollbar {
-    width: 8px;
+    width: 12px;
 }
 
 #posts::-webkit-scrollbar-track {
-    background-color: transparent;
+    background-color: #CCE6FF;
+    border-radius: 6px;
 }
 
 #posts::-webkit-scrollbar-thumb {
-    border-radius: 8px;
+    border-radius: 6px;
     background-color: #99CCFF;
     height: 20px;
 }

@@ -21,6 +21,63 @@ function process_error( $e ) {
     return $error_msg;
 }
 
+function thread( $options, $DBH, $_config ) {
+    try {
+        $opts = json_decode( $options );
+        $page = intval( $opts->page );
+        $pp = intval( $opts->pp );
+        $thread_id = $opts->thread_id;
+
+        $query = "SELECT `title`, `body`, `date_posted`, `forum_id`, user_id, users.username, users.date_joined,";
+        $query .= " ((SELECT COUNT(*) FROM posts WHERE user_id = threads.user_id) + (SELECT COUNT(*) FROM threads WHERE threads.user_id)) AS user_posts";
+        $query .= " FROM threads INNER JOIN users ON users.id = threads.user_id WHERE threads.id = ?";
+        $STH = $DBH->prepare( $query );
+        $STH->execute( array( $thread_id ) );
+        $RES = $STH->fetch( PDO::FETCH_OBJ );
+
+        $result = new stdClass();
+        $result->id = $thread_id;
+        $result->title = $RES->title;
+        $result->body = $RES->body;
+        $result->uid = $RES->user_id;
+        $result->uname = $RES->username;
+        $result->ujoined = date_format( date_create_from_format( "Y-m-d H:i:s", $RES->date_joined ), "F d, Y h:i:s A" );
+        $result->uposts = intval($RES->user_posts);
+        $result->forum_id = $RES->forum_id;
+        $result->date = date_format( date_create_from_format( "Y-m-d H:i:s", $RES->date_posted ), "F d, Y h:i:s A" );
+
+        $query = "SELECT posts.id, `body`, `date_posted`, user_id, users.username, users.date_joined,";
+        $query .= " ((SELECT COUNT(*) FROM posts WHERE posts.user_id) + (SELECT COUNT(*) FROM threads WHERE user_id = posts.user_id)) AS user_posts";
+        $query .= " FROM posts JOIN users ON users.id = posts.user_id WHERE thread_id = ?";
+        $query .= " ORDER BY date_posted ASC LIMIT " . ( ( $page - 1 ) * $pp ) . ", " . $pp;
+        $STH = $DBH->prepare( $query );
+        $STH->execute( array( $thread_id ) );
+        $RES = $STH->fetchAll( PDO::FETCH_OBJ );
+
+        $posts = array();
+        foreach($RES as $row) {
+            $obj = new stdClass();
+            $obj->id = $row->id;
+            $obj->uid = $row->user_id;
+            $obj->uname = $row->username;
+            $obj->ujoined = date_format( date_create_from_format( "Y-m-d H:i:s", $row->date_joined ), "F d, Y h:i:s A" );
+            $obj->uposts = intval($row->user_posts);
+            // format date differently
+            $obj->date = date_format( date_create_from_format( "Y-m-d H:i:s", $row->date_posted ), "F d, Y h:i:s A" );
+
+            $obj->body = $row->body;
+
+            $posts[] = $obj;
+        }
+
+        $result->posts = $posts;
+
+        return $result;
+    } catch( PDOException $e ) {
+        return process_error( $e );
+    }
+}
+
 function thread_list( $options, $DBH, $_config ) {
     try {
         $opts = json_decode( $options );
@@ -74,7 +131,7 @@ function thread_list( $options, $DBH, $_config ) {
         $result = new stdClass();
         $result->forum = new stdClass();
         $result->forum->name = $forum_info->name;
-        $result->forum->pages = ceil(intval($forum_info->num_threads) / $pp);
+        $result->forum->pages = ceil( intval( $forum_info->num_threads ) / $pp );
         $result->threads = $threads;
 
         return $result;
@@ -165,6 +222,9 @@ case "forums":
     break;
 case "threads":
     $result = thread_list( $qdata, $DBH, $_config );
+    break;
+case "thread":
+    $result = thread( $qdata, $DBH, $_config );
     break;
 case "config":
     if ( $qdata === null ) // don't do anything with no data

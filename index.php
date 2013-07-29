@@ -50,7 +50,12 @@ Not logged in. Please login or register to participate.
         <script src="js/jquery.form.js" type="text/javascript"></script>
 
         <!-- jQuery Form Validation Plugin -->
-        <script src="js/jQuery.validate.js"></script>
+        <script src="js/jquery.validate.js"></script>
+
+        <!-- jQuery jScrollPane Plugin -->
+        <script src="js/jquery.mousewheel.js"></script>
+        <script src="js/jquery.scrollpane.js"></script>
+        <link href="css/jquery.scrollpane.css" rel="stylesheet" type="text/css" />
 
         <script src="js/ramble.login.js" type="text/javascript"></script>
         <script src="js/ramble.pages.js" type="text/javascript"></script>
