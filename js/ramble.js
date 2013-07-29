@@ -9,4 +9,6 @@ $(function () {
     });
 
     Pages.load("forums", "#page");
+
+    Login.login.dialog();
 });

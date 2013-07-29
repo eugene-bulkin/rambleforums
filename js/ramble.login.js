@@ -27,6 +27,7 @@ var Login = {
         autoOpen: false,
         modal: true,
         draggable: false,
+        width: 400,
         close: function (e, ui) {
             "use strict";
             $(this).dialog("destroy");
@@ -47,18 +48,22 @@ var Login = {
         dialog: function (e, ui) {
             "use strict";
             var d = $('<div id="dialog"></div>'),
-                f = $('<form></form>'),
+                f = $('<form id="login_form"></form>'),
                 login_form = "",
                 login_buttons = {
                     "Login": Login.login.process
                 },
                 opts = $.extend({
-                    buttons: login_buttons
+                    buttons: login_buttons,
+                    title: 'Login'
                 }, Login.dialog_opts);
-            login_form += '<label for="username">Username</label>';
+            login_form += '<div>';
+            login_form += '<label for="username">Username:</label>';
             login_form += '<input type="text" name="username">';
-            login_form += '<label for="password">Password</label>';
+            login_form += '</div><div>';
+            login_form += '<label for="password">Password:</label>';
             login_form += '<input type="password" name="password">';
+            login_form += '</div>';
             f.append(login_form);
             d.append(f);
             d.dialog(opts);
@@ -96,18 +101,22 @@ var Login = {
         dialog: function (e, ui) {
             "use strict";
             var d = $('<div id="dialog"></div>'),
-                f = $('<form></form>'),
+                f = $('<form id="login_form"></form>'),
                 register_form = "",
                 reg_buttons = {
                     "Create Account": Login.register.process
                 },
                 opts = $.extend({
-                    buttons: reg_buttons
+                    buttons: reg_buttons,
+                    title: 'Register'
                 }, Login.dialog_opts);
-            register_form += '<label for="username">Username</label>';
+            register_form += '<div>';
+            register_form += '<label for="username">Username:</label>';
             register_form += '<input type="text" name="username">';
-            register_form += '<label for="password">Password</label>';
+            register_form += '</div><div>';
+            register_form += '<label for="password">Password:</label>';
             register_form += '<input type="password" name="password">';
+            register_form += '</div>';
             f.append(register_form);
             d.append(f);
             d.dialog(opts);
