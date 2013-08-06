@@ -372,6 +372,8 @@ var Pages = {
 
     processHistory: function (event) {
         var s = event.originalEvent.state;
-        Pages.load(s.mode, s.element, s.options, false, true);
+        if(s) {
+            Pages.load(s.mode, s.element, s.options, false, true);
+        }
     }
 };
