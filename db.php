@@ -2,6 +2,8 @@
 require 'config.inc.php';
 session_start();
 
+header('Content-Type: application/json');
+
 $query = array_key_exists( 'query', $_GET ) ? $_GET['query'] : null;
 if ( !$query ) {
     exit;
@@ -28,9 +30,10 @@ function thread( $options, $DBH, $_config ) {
         $pp = intval( $opts->pp );
         $thread_id = $opts->thread_id;
 
-        $query = "SELECT `title`, `body`, `date_posted`, `forum_id`, user_id, users.username, users.date_joined,";
-        $query .= " ((SELECT COUNT(*) FROM posts WHERE user_id = threads.user_id) + (SELECT COUNT(*) FROM threads WHERE threads.user_id)) AS user_posts";
-        $query .= " FROM threads INNER JOIN users ON users.id = threads.user_id WHERE threads.id = ?";
+        $query = "SELECT `title`, `body`, `date_posted`, `forum_id`, forums.name AS forum_name, user_id, users.username, users.date_joined,";
+        $query .= " ((SELECT COUNT(*) FROM posts WHERE user_id = threads.user_id) + (SELECT COUNT(*) FROM threads WHERE threads.user_id)) AS user_posts,";
+        $query .= " (SELECT COUNT(*) FROM posts WHERE posts.thread_id = threads.id) AS num_posts";
+        $query .= " FROM threads INNER JOIN users ON users.id = threads.user_id INNER JOIN forums ON forums.id = threads.forum_id WHERE threads.id = ?";
         $STH = $DBH->prepare( $query );
         $STH->execute( array( $thread_id ) );
         $RES = $STH->fetch( PDO::FETCH_OBJ );
@@ -43,7 +46,9 @@ function thread( $options, $DBH, $_config ) {
         $result->uname = $RES->username;
         $result->ujoined = date_format( date_create_from_format( "Y-m-d H:i:s", $RES->date_joined ), "F d, Y h:i:s A" );
         $result->uposts = intval($RES->user_posts);
-        $result->forum_id = $RES->forum_id;
+        $result->fid = $RES->forum_id;
+        $result->fname = $RES->forum_name;
+        $result->pages = ceil( intval( $RES->num_posts ) / $pp );
         $result->date = date_format( date_create_from_format( "Y-m-d H:i:s", $RES->date_posted ), "F d, Y h:i:s A" );
 
         $query = "SELECT posts.id, `body`, `date_posted`, user_id, users.username, users.date_joined,";
