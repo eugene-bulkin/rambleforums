@@ -442,3 +442,9 @@ div.post_title, div.post_foot {
 #posts::-webkit-scrollbar-thumb:hover {
     background-color: #4DA6FF;
 }
+
+#posts #pagelinks {
+    border-top: 2px solid #003366;
+    padding: 2px;
+    text-align: right;
+}

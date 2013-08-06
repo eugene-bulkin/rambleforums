@@ -295,7 +295,9 @@ var Pages = {
             success: function (data) {
                 var thread_body = $('<div id="thread_body">'),
                     posts = $('<div id="posts">'),
-                    user_box, user_table;
+                    user_box, user_table,
+                    pages, pagearr, temparr,
+                    linktext, li, pagelink;
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
@@ -338,6 +340,56 @@ var Pages = {
                         post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date + '</span></div>');
                         posts.append(post);
                     });
+
+                    // page links
+                    pages = $('<div><ul id="pagelinks"></ul></div>');
+                    pagearr = [1, data.pages]; // initial pages
+                    if (opts.page === 1) {
+                        temparr = [1, 2, 3];
+                    } else if (opts.page === data.pages) {
+                        temparr = [data.pages - 2, data.pages - 1, data.pages];
+                    } else {
+                        temparr = [opts.page - 1, opts.page, opts.page + 1];
+                    }
+                    pagearr.splice(1, 0, temparr[0], temparr[1], temparr[2]); // last page
+                    if (data.pages <= 3) {
+                        pagearr = [1];
+                        pagearr.push(1);
+                        for (i = 2; i <= data.pages; i++) {
+                            pagearr.push(i);
+                        }
+                        pagearr.push(data.pages);
+                    }
+                    $(pagearr).each(function (i) {
+                        switch (i) {
+                        case 0: // first link
+                            linktext = "<<";
+                            break;
+                        case (pagearr.length - 1): // last link
+                            linktext = ">>";
+                            break;
+                        default:
+                            linktext = this;
+                            break;
+                        }
+                        li = $('<li>');
+                        if (this !== opts.page) {
+                            pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
+                            pagelink.on('click', null, [this, opts.thread_id], function (e) {
+                                Pages.load("thread", "#page", {
+                                    page: e.data[0],
+                                    thread_id: e.data[1]
+                                });
+                            });
+                        } else {
+                            pagelink = $('<span>' + linktext + '</span>');
+                        }
+                        li.append(pagelink);
+                        pages.children('ul').append(li);
+                    });
+
+                    posts.append(pages);
+
                     html.append(posts);
                 }
             }
