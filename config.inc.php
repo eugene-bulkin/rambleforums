@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_STRICT);
 /*
  * Enter your database connection information here.
  *
