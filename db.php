@@ -21,18 +21,23 @@ class RambleDB {
         $this->DBH = $DBH;
         $this->special_keys = array (
             "threads" => array (
-                "num_replies" => "SELECT COUNT(*) FROM posts WHERE posts.thread_id = threads.id"
+                "num_replies" => "SELECT COUNT(*) FROM posts WHERE posts.thread_id = threads.id",
+                "pages" => "SELECT CEIL(COUNT(*) / ?) FROM posts WHERE posts.thread_id = threads.id"
             ),
             "posts" => array (
                 "last_date_posted" => "MAX(posts.date_posted)"
             ),
+            "forums" => array(
+                "pages" =>"SELECT CEIL(COUNT(*) / ?) FROM threads WHERE threads.forum_id = forums.id"
+            ),
         );
 
-        $this->tables = array( "threads", "posts" );
+        $this->tables = array( "threads", "posts", "forums" );
     }
 
     // construct a query given some options
     public function construct( $options ) {
+
         $result = "";
 
         if ( !in_array( $options->query, $this->tables ) ) {
@@ -82,17 +87,23 @@ class RambleDB {
             $result = null;
 
             $STH = $this->DBH->prepare( $this->construct( $options ) );
-            $STH->execute( array( $options->where[1] ) );
+            $data = array();
+            // pages requires per-page data
+            if ( in_array( "pages", $options->keys ) ) {
+                $data[] = $options->paginate[1];
+            }
+            $data[] = $options->where[1];
+            $STH->execute( $data );
 
             if ( $options->type === "indiv" ) {
                 $RES = $STH->fetch( PDO::FETCH_OBJ );
-                if( $RES->{$options->query . ".id"} !== null) {
+                if ( $RES->{$options->query . ".id"} !== null ) {
                     foreach ( $RES as $fullkey => $value ) {
                         $keyexp = explode( ".", $fullkey );
                         $table = $keyexp[0];
                         $key = $keyexp[1];
                         // format all dates
-                        if ( $key === "date_posted" ) {
+                        if ( in_array( $key, ["date_posted", "last_date_posted"] ) ) {
                             $value = date_format( date_create_from_format( "Y-m-d H:i:s", $value ), "F d, Y h:i:s A" );
                         }
                         if ( $table === $options->query ) {

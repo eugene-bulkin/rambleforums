@@ -8,5 +8,5 @@ $(function () {
         Pages.load("forums", "#page");
     });
 
-    Pages.load("forums", "#page");
+    Pages.load("threads", "#page", {forum_id: 1});
 });

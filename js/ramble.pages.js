@@ -1,7 +1,7 @@
 /*jslint browser: true, devel: true, plusplus: true, indent: 4, unparam: true */
 /*globals $: false, Pages: false, Config: false, Login: false */
 var Pages = {
-    forums: function () {
+    forums: function() {
         "use strict";
         var html = $('<div id="forums"></div>');
 
@@ -9,12 +9,12 @@ var Pages = {
             url: "db.php?query=forums",
             type: "POST",
             dataType: "json",
-            beforeSend: function () {
+            beforeSend: function() {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
             },
-            success: function (data) {
+            success: function(data) {
                 var i, j,
                     grp_ord = data.group_order,
                     frm_ord = data.forum_order,
@@ -52,7 +52,7 @@ var Pages = {
                         thread_count += Number(forum.num_threads);
 
                         // bind forum to go to thread list
-                        row.find('h1 a').on('click', null, forum.id, function (e) {
+                        row.find('h1 a').on('click', null, forum.id, function(e) {
                             Pages.load("threads", "#page", {
                                 forum_id: e.data
                             });
@@ -70,7 +70,7 @@ var Pages = {
         return html;
     },
 
-    threads: function (options) {
+    threads: function(options) {
         "use strict";
         var html = $('<div id="threads"></div>'),
             defaults = {
@@ -78,20 +78,43 @@ var Pages = {
                 pp: 5,
                 forum_id: 1
             },
-            opts = $.extend(defaults, options);
+            opts = $.extend(defaults, options),
+            sql = [];
+        // get info about the forum itself
+        sql[0] = {
+            type: "indiv",
+            query: "forums",
+            keys: ["id", "name", "pages"],
+            each: {},
+            where: ["id", opts.forum_id],
+            order: false,
+            paginate: [opts.page, opts.pp]
+        };
+        // actual thread list sql
+        sql[1] = {
+            type: "list",
+            query: "threads",
+            keys: ["id", "title", "date_posted", "num_replies"],
+            each: {
+                "users": ["id", "username"],
+                "last_post": ["id", "date", "uid", "uname"]
+            },
+            where: ["forum_id", opts.forum_id],
+            order: ["date_posted", "DESC"],
+            paginate: [opts.page, opts.pp]
+        };
         $.ajax({
             url: "db.php",
             data: {
-                query: "threads",
-                data: JSON.stringify(opts)
+                options: JSON.stringify(sql)
             },
             dataType: "json",
-            beforeSend: function () {
+            beforeSend: function() {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
             },
-            success: function (data) {
+            success: function(data) {
                 var i,
                     table, tbody, forum, row, pagination,
                     tfoot, pages, pagearr, temparr, li, pagelink, linktext;
@@ -102,29 +125,29 @@ var Pages = {
                 table = $("<table>");
                 tbody = $("<tbody>");
                 tfoot = $("<tfoot>");
-                forum = data.forum;
+                forum = data[0];
 
                 table.addClass("list").attr('id', 'forum').attr('cellspacing', '0');
                 table.append("<caption>" + forum.name + "</caption>");
                 table.append("<thead><tr><th>Thread</th><th>Author</th><th>Replies</th><th>Last Post</th></tr></thead>");
 
-                $(data.threads).each(function () {
+                $(data[1]).each(function() {
                     row = $('<tr class="thread">');
                     row.append('<td><a class="thread_link">' + this.title + "</a></td>");
-                    row.append("<td><a>" + this.uname + "</a></td>");
-                    row.append("<td>" + this.posts + "</td>");
+                    row.append("<td><a>" + this.user.username + "</a></td>");
+                    row.append("<td>" + this.num_replies + "</td>");
                     // if there is a last post, say so; else it is the thread itself
                     if (this.last_post !== null) {
-                        row.append('<td>by <a>' + this.last_post.uname + '</a><br /><span class="date">' + this.last_post.date + '</span></td>');
+                        row.append('<td>by <a>' + this.last_post.user.username + '</a><br /><span class="date">' + this.last_post.last_date_posted + '</span></td>');
                     } else {
-                        row.append('<td>by <a>' + this.uname + '</a><br /><span class="date">' + this.date + '</span></td>');
+                        row.append('<td>by <a>' + this.user.username + '</a><br /><span class="date">' + this.date_posted + '</span></td>');
                     }
 
                     tbody.append(row);
 
-                    row.find('.thread_link').on('click', null, this.id, function (e) {
+                    row.find('.thread_link').on('click', null, this.id, function(e) {
                         Pages.load("thread", "#page", {
-                                thread_id: e.data
+                            thread_id: e.data
                         });
                     });
                 });
@@ -152,22 +175,22 @@ var Pages = {
                     }
                     pagearr.push(forum.pages);
                 }
-                $(pagearr).each(function (i) {
+                $(pagearr).each(function(i) {
                     switch (i) {
-                    case 0: // first link
-                        linktext = "<<";
-                        break;
-                    case (pagearr.length - 1): // last link
-                        linktext = ">>";
-                        break;
-                    default:
-                        linktext = this;
-                        break;
+                        case 0: // first link
+                            linktext = "<<";
+                            break;
+                        case (pagearr.length - 1): // last link
+                            linktext = ">>";
+                            break;
+                        default:
+                            linktext = this;
+                            break;
                     }
                     li = $('<li>');
                     if (this !== opts.page) {
                         pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
-                        pagelink.on('click', null, [this, opts.forum_id], function (e) {
+                        pagelink.on('click', null, [this, opts.forum_id], function(e) {
                             Pages.load("threads", "#page", {
                                 page: e.data[0],
                                 forum_id: e.data[1]
@@ -190,7 +213,7 @@ var Pages = {
         return html;
     },
 
-    group_order: function () {
+    group_order: function() {
         "use strict";
         var html = $('<div id="group_order"></div>');
 
@@ -198,12 +221,12 @@ var Pages = {
             url: "db.php?query=forums",
             type: "POST",
             dataType: "json",
-            beforeSend: function () {
+            beforeSend: function() {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
             },
-            success: function (data) {
+            success: function(data) {
                 var fgrps = $('<div id="forum_groups">'),
                     i,
                     j,
@@ -266,7 +289,7 @@ var Pages = {
         return html;
     },
 
-    thread: function (options) {
+    thread: function(options) {
         "use strict";
         var html = $('<div id="thread"></div>'),
             defaults = {
@@ -282,12 +305,12 @@ var Pages = {
                 data: JSON.stringify(opts)
             },
             dataType: "json",
-            beforeSend: function () {
+            beforeSend: function() {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
             },
-            success: function (data) {
+            success: function(data) {
                 var thread_body = $('<div id="thread_body">'),
                     posts = $('<div id="posts">'),
                     user_box, user_table;
@@ -308,7 +331,7 @@ var Pages = {
                 thread_body.append('<div class="post_body"><span>' + data.body + '</span></div>');
                 thread_body.append('<div class="post_foot"><span class="date_posted">Posted on ' + data.date + '</span></div>');
                 // get posts
-                $(data.posts).each(function () {
+                $(data.posts).each(function() {
                     var post = $('<div class="post">'),
                         user_box, user_table;
                     // create user box
@@ -332,30 +355,34 @@ var Pages = {
         return html;
     },
 
-    load: function (mode, element, options) {
+    load: function(mode, element, options) {
         "use strict";
 
-        var state = {'mode': mode, 'element': element, 'options': options};
+        var state = {
+            'mode': mode,
+            'element': element,
+            'options': options
+        };
 
         switch (mode) {
-        case "forums":
-            $(element).html(Pages.forums());
-            break;
-        case "threads":
-            $(element).html(Pages.threads(options));
-            break;
-        case "thread":
-            $(element).html(Pages.thread(options));
-            break;
-        case "group_order":
-            $(element).html(Pages.group_order());
-            break;
-        default:
-            break;
+            case "forums":
+                $(element).html(Pages.forums());
+                break;
+            case "threads":
+                $(element).html(Pages.threads(options));
+                break;
+            case "thread":
+                $(element).html(Pages.thread(options));
+                break;
+            case "group_order":
+                $(element).html(Pages.group_order());
+                break;
+            default:
+                break;
         }
 
         // add to history
-        if(history.state !== null) {
+        if (history.state !== null) {
             history.pushState(state);
         } else {
             history.replaceState(state);
@@ -364,7 +391,7 @@ var Pages = {
         }
     },
 
-    processHistory: function (event) {
+    processHistory: function(event) {
         var s = event.originalEvent.state;
         Pages.load(s.mode, s.element, s.options);
     }
