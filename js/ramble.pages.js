@@ -98,6 +98,11 @@ var Pages = {
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
+                // back to forum list
+                html.append('<div class="backlink"><a>< Go Back to Forums</a></div>');
+                $('.backlink a').on('click', function () {
+                    Pages.load("forums", "#page");
+                });
                 // build thread list
                 table = $("<table>");
                 tbody = $("<tbody>");
@@ -294,6 +299,13 @@ var Pages = {
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
+                //stfsda
+                html.append('<div class="backlink">In <a>' + data.fname + '</a></div>');
+                $(".backlink a").on('click', null, data.fid, function (e) {
+                    Pages.load("threads", "#page", {
+                        forum_id: e.data
+                    });
+                });
                 // thread first post
                 // create user box
                 user_box = $('<div class="user_box">');
