@@ -8,5 +8,10 @@ $(function () {
         Pages.load("forums", "#page");
     });
 
-    Pages.load("forums", "#page");
+    // page already loaded! that is, we just refreshed
+    if(history.state && history.state.rambleforums) {
+        Pages.load(history.state.mode, history.state.element, history.state.options, true);
+    } else {
+        Pages.load("forums", "#page", null, true);
+    }
 });

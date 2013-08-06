@@ -307,35 +307,39 @@ var Pages = {
                 thread_body.append('<div class="post_title"><span>' + data.title + '</span></div>');
                 thread_body.append('<div class="post_body"><span>' + data.body + '</span></div>');
                 thread_body.append('<div class="post_foot"><span class="date_posted">Posted on ' + data.date + '</span></div>');
-                // get posts
-                $(data.posts).each(function () {
-                    var post = $('<div class="post">'),
-                        user_box, user_table;
-                    // create user box
-                    user_box = $('<div class="user_box">');
-                    user_box.append('<span class="username">' + this.uname + '</span>');
-                    user_table = $('<table class="user_data">');
-                    user_table.append('<tr><th>Member since</th><td>' + this.ujoined + '</td></tr>');
-                    user_table.append('<tr><th>Total posts</th><td>' + this.uposts + '</td></tr>');
-                    user_box.append(user_table);
-                    post.append(user_box);
-                    // create post body
-                    post.append('<div class="post_body"><span>' + this.body + '</span></div>');
-                    post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date + '</span></div>');
-                    posts.append(post);
-                });
                 html.append(thread_body);
-                html.append(posts);
+                // get posts
+                if(data.posts.length > 0) {
+                    $(data.posts).each(function () {
+                        var post = $('<div class="post">'),
+                            user_box, user_table;
+                        // create user box
+                        user_box = $('<div class="user_box">');
+                        user_box.append('<span class="username">' + this.uname + '</span>');
+                        user_table = $('<table class="user_data">');
+                        user_table.append('<tr><th>Member since</th><td>' + this.ujoined + '</td></tr>');
+                        user_table.append('<tr><th>Total posts</th><td>' + this.uposts + '</td></tr>');
+                        user_box.append(user_table);
+                        post.append(user_box);
+                        // create post body
+                        post.append('<div class="post_body"><span>' + this.body + '</span></div>');
+                        post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date + '</span></div>');
+                        posts.append(post);
+                    });
+                    html.append(posts);
+                }
             }
         });
 
         return html;
     },
 
-    load: function (mode, element, options) {
+    load: function (mode, element, options, firstLoad, noHistory) {
         "use strict";
 
-        var state = {'mode': mode, 'element': element, 'options': options};
+        firstLoad = firstLoad || false;
+        noHistory = noHistory || false;
+        var state = {'mode': mode, 'element': element, 'options': options, 'rambleforums': true};
 
         switch (mode) {
         case "forums":
@@ -355,17 +359,19 @@ var Pages = {
         }
 
         // add to history
-        if(history.state !== null) {
-            history.pushState(state);
-        } else {
-            history.replaceState(state);
+        if(!noHistory) {
+            if(!firstLoad) {
+                history.pushState(state);
+            } else {
+                history.replaceState(state);
 
-            $(window).on('popstate', Pages.processHistory);
+                $(window).on('popstate', Pages.processHistory);
+            }
         }
     },
 
     processHistory: function (event) {
         var s = event.originalEvent.state;
-        Pages.load(s.mode, s.element, s.options);
+        Pages.load(s.mode, s.element, s.options, false, true);
     }
 };
