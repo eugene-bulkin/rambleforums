@@ -39,7 +39,6 @@ var Pages = {
                 html.html('<img src="images/loading.gif" />');
             },
             success: function(data) {
-                console.log(data);
                 var i, j,
                     grp_ord = data[0].group_order,
                     frm_ord = data[0].forum_order,
@@ -248,11 +247,34 @@ var Pages = {
 
     group_order: function() {
         "use strict";
-        var html = $('<div id="group_order"></div>');
+        var html = $('<div id="group_order"></div>'),
+            sql = [];
+        // get group and forum orders
+        sql[0] = {
+            type: "indiv",
+            query: "config",
+            keys: ["forum.group_order", "forum.forum_order"]
+        };
+        // get forum groups
+        sql[1] = {
+            type: "list",
+            query: "forum_groups",
+            keys: ["id", "name"],
+            each: {},
+        };
+        // get forums
+        sql[2] = {
+            type: "list",
+            query: "forums",
+            keys: ["id", "name"],
+            each: {}
+        };
 
         $.ajax({
-            url: "db.php?query=forums",
-            type: "POST",
+            url: "db.php",
+            data: {
+                options: JSON.stringify(sql)
+            },
             dataType: "json",
             beforeSend: function() {
                 // add loading gif
@@ -260,32 +282,40 @@ var Pages = {
                 html.html('<img src="images/loading.gif" />');
             },
             success: function(data) {
-                var fgrps = $('<div id="forum_groups">'),
+                var fghtml = $('<div id="forum_groups">'),
                     i,
                     j,
-                    grp_ord = data.group_order,
-                    frm_ord = data.forum_order,
+                    grp_ord = data[0].group_order,
+                    frm_ord = data[0].forum_order,
                     wClasses = "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all",
+                    fgrps = {}, forums = {},
                     fgrp,
                     ord,
                     div,
                     ful,
                     forum,
                     li;
+                // turn forum groups and forums into associative arrays
+                $(data[1]).each(function () {
+                    fgrps[this.id] = this;
+                });
+                $(data[2]).each(function () {
+                    forums[this.id] = this;
+                });
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
                 // process forum groups
                 for (i = 0; i < grp_ord.length; i++) {
-                    fgrp = data.forum_groups[grp_ord[i]];
+                    fgrp = fgrps[grp_ord[i]];
                     ord = frm_ord[fgrp.id];
                     div = $('<div class="fgroup">');
                     ful = $('<ul class="forumSortable">');
                     div.attr('id', 'fg' + fgrp.id);
                     div.append('<div class="fgname"><span>' + fgrp.name + '</span></div>');
-                    console.log(ord, fgrp.forums);
+                    console.log(ord, forums);
                     for (j = 0; j < ord.length; j++) {
-                        forum = fgrp.forums[ord[j]];
+                        forum = forums[ord[j]];
                         li = $('<li>');
                         li.addClass("ui-button ui-widget ui-state-default ui-button-text-only");
                         li.attr('id', 'f' + forum.id);
@@ -293,11 +323,11 @@ var Pages = {
                         ful.append(li);
                     }
                     div.append(ful);
-                    fgrps.append(div);
+                    fghtml.append(div);
                 }
 
                 // add sortability
-                fgrps.sortable({
+                fghtml.sortable({
                     update: Config.processGroupOrder,
                     axis: 'x',
                     cursor: 'move',
@@ -305,7 +335,7 @@ var Pages = {
                     revert: true,
                     tolerance: "pointer"
                 }).disableSelection();
-                html.append(fgrps);
+                html.append(fghtml);
 
                 $(".fgroup").addClass(wClasses);
                 $(".forumSortable").sortable({
