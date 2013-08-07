@@ -3,11 +3,35 @@
 var Pages = {
     forums: function() {
         "use strict";
-        var html = $('<div id="forums"></div>');
-
+        var html = $('<div id="forums"></div>'),
+            sql = [];
+        // get group and forum orders
+        sql[0] = {
+            type: "indiv",
+            query: "config",
+            keys: ["forum.group_order", "forum.forum_order"]
+        };
+        // get forum groups
+        sql[1] = {
+            type: "list",
+            query: "forum_groups",
+            keys: ["id", "name"],
+            each: {},
+        };
+        // get forums
+        sql[2] = {
+            type: "list",
+            query: "forums",
+            keys: ["id", "name", "description", "num_threads"],
+            each: {
+                "last_post": ["id", "date", "uid", "uname"]
+            }
+        };
         $.ajax({
-            url: "db.php?query=forums",
-            type: "POST",
+            url: "db.php",
+            data: {
+                options: JSON.stringify(sql)
+            },
             dataType: "json",
             beforeSend: function() {
                 // add loading gif
@@ -15,17 +39,26 @@ var Pages = {
                 html.html('<img src="images/loading.gif" />');
             },
             success: function(data) {
+                console.log(data);
                 var i, j,
-                    grp_ord = data.group_order,
-                    frm_ord = data.forum_order,
+                    grp_ord = data[0].group_order,
+                    frm_ord = data[0].forum_order,
+                    fgrps = {}, forums = {},
                     fgrp, ord, table, tbody, thread_count,
                     row, forum, lastp;
+                // turn forum groups and forums into associative arrays
+                $(data[1]).each(function () {
+                    fgrps[this.id] = this;
+                });
+                $(data[2]).each(function () {
+                    forums[this.id] = this;
+                });
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
                 // process forum groups
                 for (i = 0; i < grp_ord.length; i++) {
-                    fgrp = data.forum_groups[grp_ord[i]];
+                    fgrp = fgrps[grp_ord[i]];
                     ord = frm_ord[fgrp.id];
                     table = $("<table>");
                     tbody = $("<tbody>");
@@ -37,7 +70,7 @@ var Pages = {
                     // add forum list
                     for (j = 0; j < ord.length; j++) {
                         row = $('<tr class="forum">');
-                        forum = fgrp.forums[ord[j]];
+                        forum = forums[ord[j]];
                         lastp = forum.last_post;
                         row.append('<td><h1><a>' + forum.name + '</a></h1><br />' + forum.description + '</td>');
 
@@ -45,7 +78,7 @@ var Pages = {
                         if (lastp === null) {
                             row.append('<td>No posts in this forum</td>');
                         } else {
-                            row.append('<td>by <a>' + lastp.uname + '</a><br /><span class="date">' + lastp.date + '</span></td>');
+                            row.append('<td>by <a>' + lastp.user.username + '</a><br /><span class="date">' + lastp.last_date_posted + '</span></td>');
                         }
                         tbody.append(row);
 

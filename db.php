@@ -11,10 +11,12 @@ $options = json_decode( $_GET['options'] );
 class RambleDB {
     private $special_keys;
     private $DBH;
+    private $CONF;
     private $tables;
 
-    public function __construct( $DBH ) {
+    public function __construct( $DBH, $CONF ) {
         $this->DBH = $DBH;
+        $this->CONF = $CONF;
         $this->special_keys = array (
             "threads" => array (
                 "num_replies" => "SELECT COUNT(*) FROM posts WHERE posts.thread_id = threads.id",
@@ -24,14 +26,16 @@ class RambleDB {
                 "last_date_posted" => "MAX(posts.date_posted)"
             ),
             "forums" => array(
+                "num_threads" => "SELECT COUNT(*) FROM threads WHERE threads.forum_id = forums.id",
                 "pages" =>"SELECT CEIL(COUNT(*) / ?) FROM threads WHERE threads.forum_id = forums.id"
             ),
             "users" => array (
                 "num_posts" => "(SELECT COUNT(*) FROM posts WHERE users.id = posts.user_id) + (SELECT COUNT(*) FROM threads WHERE users.id = threads.user_id)"
             ),
+            "forum_groups" => array()
         );
 
-        $this->tables = array( "threads", "posts", "forums", "users" );
+        $this->tables = array( "threads", "posts", "forums", "forum_groups", "users" );
     }
 
     private function to_singular( $table ) {
@@ -68,7 +72,15 @@ class RambleDB {
                 $selects[] = $this->key_to_sql( $table, $key );
             }
         }
-        $result = sprintf( "SELECT %s FROM %s %s WHERE %s.%s=?", implode( ", ", $selects ), $options->query, implode( " ", $joins ), $options->query, $options->where[0] );
+        $result = sprintf( "SELECT %s FROM %s %s", implode( ", ", $selects ), $options->query, implode( " ", $joins ) );
+        if ( array_key_exists( "where", $options ) ) {
+            if ( count( explode( ".", $options->where[0] )) > 1 ) {
+                $wheretable = "";
+            } else {
+                $wheretable = $options->query . ".";
+            }
+            $result .= sprintf( " WHERE %s%s=?", $wheretable, $options->where[0] );
+        }
         if ( $options->type === "list" ) {
             if ( array_key_exists( "order", $options ) ) {
                 $result .= sprintf( " ORDER BY %s %s", $options->order[0], $options->order[1] );
@@ -92,6 +104,15 @@ class RambleDB {
         foreach ( $queries as $options ) {
             $result = null;
 
+            if ( $options->query === "config" ) {
+                $result = array();
+                foreach ( $options->keys as $key ) {
+                    $result[explode(".",$key)[1]] = $this->CONF->get( $key );
+                }
+                $results[] = $result;
+                continue;
+            }
+
             $sqlquery = $this->construct( $options );
             $STH = $this->DBH->prepare( $sqlquery );
             $data = array();
@@ -99,12 +120,15 @@ class RambleDB {
             if ( in_array( "pages", $options->keys ) ) {
                 $data[] = $options->paginate[1];
             }
-            $data[] = $options->where[1];
+            if ( array_key_exists( "where", $options ) ) {
+                $data[] = $options->where[1];
+            }
             try {
                 $STH->execute( $data );
             } catch( PDOException $e ) {
                 echo $e->getMessage();
                 echo "\nThe query was: '$sqlquery'";
+                die();
             }
 
             if ( $options->type === "indiv" ) {
@@ -160,6 +184,11 @@ class RambleDB {
                             $opts->where = [ "thread_id", $row_result["id"] ];
                             $lastpost = $this->query( array( $opts ) )[0];
                             $row_result["last_post"] = $lastpost;
+                        } elseif ( $options->query === "forums" ) {
+                            $opts->where = [ "threads.forum_id", $row_result["id"] ];
+                            $opts->each["threads"] = array();
+                            $lastpost = $this->query( array( $opts ) )[0];
+                            $row_result["last_post"] = $lastpost;
                         }
                     }
 
@@ -173,7 +202,7 @@ class RambleDB {
     }
 }
 
-$SQL = new RambleDB( $DBH );
+$SQL = new RambleDB( $DBH, $_config );
 
 echo json_encode( $SQL->query( $options ) );
 ?>
