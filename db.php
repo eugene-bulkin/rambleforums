@@ -74,7 +74,7 @@ class RambleDB {
         }
         $result = sprintf( "SELECT %s FROM %s %s", implode( ", ", $selects ), $options->query, implode( " ", $joins ) );
         if ( array_key_exists( "where", $options ) ) {
-            if ( count( explode( ".", $options->where[0] )) > 1 ) {
+            if ( count( explode( ".", $options->where[0] ) ) > 1 ) {
                 $wheretable = "";
             } else {
                 $wheretable = $options->query . ".";
@@ -107,7 +107,7 @@ class RambleDB {
             if ( $options->query === "config" ) {
                 $result = array();
                 foreach ( $options->keys as $key ) {
-                    $result[explode(".",$key)[1]] = $this->CONF->get( $key );
+                    $result[explode( ".", $key )[1]] = $this->CONF->get( $key );
                 }
                 $results[] = $result;
                 continue;

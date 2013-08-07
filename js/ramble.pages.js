@@ -40,7 +40,7 @@ var Pages = {
             },
             success: function(data) {
                 var i, j,
-                grp_ord = data[0].group_order,
+                    grp_ord = data[0].group_order,
                     frm_ord = data[0].forum_order,
                     fgrps = {}, forums = {},
                     fgrp, ord, table, tbody, thread_count,
@@ -48,12 +48,12 @@ var Pages = {
                 // turn forum groups and forums into associative arrays
                 $(data[1])
                     .each(function() {
-                    fgrps[this.id] = this;
-                });
+                        fgrps[this.id] = this;
+                    });
                 $(data[2])
                     .each(function() {
-                    forums[this.id] = this;
-                });
+                        forums[this.id] = this;
+                    });
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
@@ -89,10 +89,10 @@ var Pages = {
                         // bind forum to go to thread list
                         row.find('h1 a')
                             .on('click', null, forum.id, function(e) {
-                            Pages.load("threads", "#page", {
-                                forum_id: e.data
+                                Pages.load("threads", "#page", {
+                                    forum_id: e.data
+                                });
                             });
-                        });
                     }
                     table.append(tbody);
 
@@ -152,8 +152,8 @@ var Pages = {
             },
             success: function(data) {
                 var i,
-                table, tbody, forum, row, pagination,
-                tfoot, pages, pagearr, temparr, li, pagelink, linktext;
+                    table, tbody, forum, row, pagination,
+                    tfoot, pages, pagearr, temparr, li, pagelink, linktext;
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
@@ -171,26 +171,26 @@ var Pages = {
 
                 $(data[1])
                     .each(function() {
-                    row = $('<tr class="thread">');
-                    row.append('<td><a class="thread_link">' + this.title + "</a></td>");
-                    row.append("<td><a>" + this.user.username + "</a></td>");
-                    row.append("<td>" + this.num_replies + "</td>");
-                    // if there is a last post, say so; else it is the thread itself
-                    if (this.last_post !== null) {
-                        row.append('<td>by <a>' + this.last_post.user.username + '</a><br /><span class="date">' + this.last_post.last_date_posted + '</span></td>');
-                    } else {
-                        row.append('<td>by <a>' + this.user.username + '</a><br /><span class="date">' + this.date_posted + '</span></td>');
-                    }
+                        row = $('<tr class="thread">');
+                        row.append('<td><a class="thread_link">' + this.title + "</a></td>");
+                        row.append("<td><a>" + this.user.username + "</a></td>");
+                        row.append("<td>" + this.num_replies + "</td>");
+                        // if there is a last post, say so; else it is the thread itself
+                        if (this.last_post !== null) {
+                            row.append('<td>by <a>' + this.last_post.user.username + '</a><br /><span class="date">' + this.last_post.last_date_posted + '</span></td>');
+                        } else {
+                            row.append('<td>by <a>' + this.user.username + '</a><br /><span class="date">' + this.date_posted + '</span></td>');
+                        }
 
-                    tbody.append(row);
+                        tbody.append(row);
 
-                    row.find('.thread_link')
-                        .on('click', null, this.id, function(e) {
-                        Pages.load("thread", "#page", {
-                            thread_id: e.data
-                        });
+                        row.find('.thread_link')
+                            .on('click', null, this.id, function(e) {
+                                Pages.load("thread", "#page", {
+                                    thread_id: e.data
+                                });
+                            });
                     });
-                });
 
                 table.append(tbody);
 
@@ -217,35 +217,35 @@ var Pages = {
                 }
                 $(pagearr)
                     .each(function(i) {
-                    switch (i) {
-                    case 0:
-                        // first link
-                        linktext = "<<";
-                        break;
-                    case (pagearr.length - 1):
-                        // last link
-                        linktext = ">>";
-                        break;
-                    default:
-                        linktext = this;
-                        break;
-                    }
-                    li = $('<li>');
-                    if (this !== opts.page) {
-                        pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
-                        pagelink.on('click', null, [this, opts.forum_id], function(e) {
-                            Pages.load("threads", "#page", {
-                                page: e.data[0],
-                                forum_id: e.data[1]
+                        switch (i) {
+                            case 0:
+                                // first link
+                                linktext = "<<";
+                                break;
+                            case (pagearr.length - 1):
+                                // last link
+                                linktext = ">>";
+                                break;
+                            default:
+                                linktext = this;
+                                break;
+                        }
+                        li = $('<li>');
+                        if (this !== opts.page) {
+                            pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
+                            pagelink.on('click', null, [this, opts.forum_id], function(e) {
+                                Pages.load("threads", "#page", {
+                                    page: e.data[0],
+                                    forum_id: e.data[1]
+                                });
                             });
-                        });
-                    } else {
-                        pagelink = $('<span>' + linktext + '</span>');
-                    }
-                    li.append(pagelink);
-                    pages.children('ul')
-                        .append(li);
-                });
+                        } else {
+                            pagelink = $('<span>' + linktext + '</span>');
+                        }
+                        li.append(pagelink);
+                        pages.children('ul')
+                            .append(li);
+                    });
 
                 tfoot.children('tr')
                     .append(pages);
@@ -311,12 +311,12 @@ var Pages = {
                 // turn forum groups and forums into associative arrays
                 $(data[1])
                     .each(function() {
-                    fgrps[this.id] = this;
-                });
+                        fgrps[this.id] = this;
+                    });
                 $(data[2])
                     .each(function() {
-                    forums[this.id] = this;
-                });
+                        forums[this.id] = this;
+                    });
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
@@ -357,13 +357,13 @@ var Pages = {
                     .addClass(wClasses);
                 $(".forumSortable")
                     .sortable({
-                    connectWith: ".forumSortable",
-                    update: Config.processForumOrder,
-                    cursor: 'move',
-                    distance: 15,
-                    opacity: 0.9,
-                    revert: true
-                })
+                        connectWith: ".forumSortable",
+                        update: Config.processForumOrder,
+                        cursor: 'move',
+                        distance: 15,
+                        opacity: 0.9,
+                        revert: true
+                    })
                     .disableSelection();
             }
         });
@@ -442,21 +442,21 @@ var Pages = {
                 // get posts
                 $(data[1])
                     .each(function() {
-                    var post = $('<div class="post">'),
-                        user_box, user_table;
-                    // create user box
-                    user_box = $('<div class="user_box">');
-                    user_box.append('<span class="username">' + this.user.username + '</span>');
-                    user_table = $('<table class="user_data">');
-                    user_table.append('<tr><th>Member since</th><td>' + this.user.date_joined + '</td></tr>');
-                    user_table.append('<tr><th>Total posts</th><td>' + this.user.num_posts + '</td></tr>');
-                    user_box.append(user_table);
-                    post.append(user_box);
-                    // create post body
-                    post.append('<div class="post_body"><span>' + this.body + '</span></div>');
-                    post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date_posted + '</span></div>');
-                    posts.append(post);
-                });
+                        var post = $('<div class="post">'),
+                            user_box, user_table;
+                        // create user box
+                        user_box = $('<div class="user_box">');
+                        user_box.append('<span class="username">' + this.user.username + '</span>');
+                        user_table = $('<table class="user_data">');
+                        user_table.append('<tr><th>Member since</th><td>' + this.user.date_joined + '</td></tr>');
+                        user_table.append('<tr><th>Total posts</th><td>' + this.user.num_posts + '</td></tr>');
+                        user_box.append(user_table);
+                        post.append(user_box);
+                        // create post body
+                        post.append('<div class="post_body"><span>' + this.body + '</span></div>');
+                        post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date_posted + '</span></div>');
+                        posts.append(post);
+                    });
                 html.append(thread_body);
                 html.append(posts);
             }
@@ -475,24 +475,24 @@ var Pages = {
         };
 
         switch (mode) {
-        case "forums":
-            $(element)
-                .html(Pages.forums());
-            break;
-        case "threads":
-            $(element)
-                .html(Pages.threads(options));
-            break;
-        case "thread":
-            $(element)
-                .html(Pages.thread(options));
-            break;
-        case "group_order":
-            $(element)
-                .html(Pages.group_order());
-            break;
-        default:
-            break;
+            case "forums":
+                $(element)
+                    .html(Pages.forums());
+                break;
+            case "threads":
+                $(element)
+                    .html(Pages.threads(options));
+                break;
+            case "thread":
+                $(element)
+                    .html(Pages.thread(options));
+                break;
+            case "group_order":
+                $(element)
+                    .html(Pages.group_order());
+                break;
+            default:
+                break;
         }
 
         // add to history
