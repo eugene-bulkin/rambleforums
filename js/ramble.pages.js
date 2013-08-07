@@ -390,7 +390,7 @@ var Pages = {
         sql[0] = {
             type: "indiv",
             query: "threads",
-            keys: ["id", "title", "body", "date_posted"],
+            keys: ["id", "title", "body", "date_posted", "pages"],
             each: {
                 "users": ["id", "username", "date_joined", "num_posts"],
                 "forums": ["id", "name"]
@@ -477,22 +477,22 @@ var Pages = {
 
                     // page links
                     pages = $('<div><ul id="pagelinks"></ul></div>');
-                    pagearr = [1, data.pages]; // initial pages
+                    pagearr = [1, thread.pages]; // initial pages
                     if (opts.page === 1) {
                         temparr = [1, 2, 3];
-                    } else if (opts.page === data.pages) {
-                        temparr = [data.pages - 2, data.pages - 1, data.pages];
+                    } else if (opts.page === thread.pages) {
+                        temparr = [thread.pages - 2, thread.pages - 1, thread.pages];
                     } else {
                         temparr = [opts.page - 1, opts.page, opts.page + 1];
                     }
                     pagearr.splice(1, 0, temparr[0], temparr[1], temparr[2]); // last page
-                    if (data.pages <= 3) {
+                    if (thread.pages <= 3) {
                         pagearr = [1];
                         pagearr.push(1);
-                        for (i = 2; i <= data.pages; i++) {
+                        for (i = 2; i <= thread.pages; i++) {
                             pagearr.push(i);
                         }
-                        pagearr.push(data.pages);
+                        pagearr.push(thread.pages);
                     }
                     $(pagearr)
                         .each(function(i) {
