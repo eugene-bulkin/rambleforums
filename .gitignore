@@ -1,5 +1,8 @@
 test.html
 
+# SASS files
+.sass-cache
+
 # Sublime Text Files
 *.sublime-*
 
