@@ -334,7 +334,6 @@ var Pages = {
                     ful = $('<ul class="forumSortable">');
                     div.attr('id', 'fg' + fgrp.id);
                     div.append('<div class="fgname"><span>' + fgrp.name + '</span></div>');
-                    console.log(ord, forums);
                     for (j = 0; j < ord.length; j++) {
                         forum = forums[ord[j]];
                         li = $('<li>');
@@ -424,7 +423,6 @@ var Pages = {
                 html.html('<img src="images/loading.gif" />');
             },
             success: function(data) {
-                console.log(data);
                 var thread_body = $('<div id="thread_body">'),
                     posts = $('<div id="posts">'),
                     user_box, user_table,
