@@ -297,12 +297,37 @@ var Pages = {
                 pp: 5,
                 thread_id: 1
             },
-            opts = $.extend(defaults, options);
+            opts = $.extend(defaults, options),
+            sql = [];
+        // get info about the thread itself
+        sql[0] = {
+            type: "indiv",
+            query: "threads",
+            keys: ["id", "title", "body", "date_posted"],
+            each: {
+                "users": ["id", "username", "date_joined", "num_posts"],
+                "forums": ["id", "name"]
+            },
+            where: ["id", opts.thread_id],
+            order: false,
+            paginate: [opts.page, opts.pp]
+        };
+        // actual post list sql
+        sql[1] = {
+            type: "list",
+            query: "posts",
+            keys: ["id", "body", "date_posted"],
+            each: {
+                "users": ["id", "username", "date_joined", "num_posts"]
+            },
+            where: ["thread_id", opts.thread_id],
+            order: ["date_posted", "DESC"],
+            paginate: [opts.page, opts.pp]
+        };
         $.ajax({
             url: "db.php",
             data: {
-                query: "thread",
-                data: JSON.stringify(opts)
+                options: JSON.stringify(sql)
             },
             dataType: "json",
             beforeSend: function() {
@@ -311,40 +336,42 @@ var Pages = {
                 html.html('<img src="images/loading.gif" />');
             },
             success: function(data) {
+                console.log(data);
                 var thread_body = $('<div id="thread_body">'),
                     posts = $('<div id="posts">'),
-                    user_box, user_table;
+                    user_box, user_table,
+                    thread = data[0];
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
                 // thread first post
                 // create user box
                 user_box = $('<div class="user_box">');
-                user_box.append('<span class="username">' + data.uname + '</span>');
+                user_box.append('<span class="username">' + thread.user.username + '</span>');
                 user_table = $('<table class="user_data">');
-                user_table.append('<tr><th>Member since</th><td>' + data.ujoined + '</td></tr>');
-                user_table.append('<tr><th>Total posts</th><td>' + data.uposts + '</td></tr>');
+                user_table.append('<tr><th>Member since</th><td>' + thread.user.date_joined + '</td></tr>');
+                user_table.append('<tr><th>Total posts</th><td>' + thread.user.num_posts + '</td></tr>');
                 user_box.append(user_table);
                 thread_body.append(user_box);
                 // create post body
-                thread_body.append('<div class="post_title"><span>' + data.title + '</span></div>');
-                thread_body.append('<div class="post_body"><span>' + data.body + '</span></div>');
-                thread_body.append('<div class="post_foot"><span class="date_posted">Posted on ' + data.date + '</span></div>');
+                thread_body.append('<div class="post_title"><span>' + thread.title + '</span></div>');
+                thread_body.append('<div class="post_body"><span>' + thread.body + '</span></div>');
+                thread_body.append('<div class="post_foot"><span class="date_posted">Posted on ' + thread.date_posted + '</span></div>');
                 // get posts
-                $(data.posts).each(function() {
+                $(data[1]).each(function() {
                     var post = $('<div class="post">'),
                         user_box, user_table;
                     // create user box
                     user_box = $('<div class="user_box">');
-                    user_box.append('<span class="username">' + this.uname + '</span>');
+                    user_box.append('<span class="username">' + this.user.username + '</span>');
                     user_table = $('<table class="user_data">');
-                    user_table.append('<tr><th>Member since</th><td>' + this.ujoined + '</td></tr>');
-                    user_table.append('<tr><th>Total posts</th><td>' + this.uposts + '</td></tr>');
+                    user_table.append('<tr><th>Member since</th><td>' + this.user.date_joined + '</td></tr>');
+                    user_table.append('<tr><th>Total posts</th><td>' + this.user.num_posts + '</td></tr>');
                     user_box.append(user_table);
                     post.append(user_box);
                     // create post body
                     post.append('<div class="post_body"><span>' + this.body + '</span></div>');
-                    post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date + '</span></div>');
+                    post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date_posted + '</span></div>');
                     posts.append(post);
                 });
                 html.append(thread_body);

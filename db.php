@@ -13,10 +13,6 @@ class RambleDB {
     private $DBH;
     private $tables;
 
-    private function to_singular( $table ) {
-        return substr( $table, 0, -1 );
-    }
-
     public function __construct( $DBH ) {
         $this->DBH = $DBH;
         $this->special_keys = array (
@@ -30,9 +26,24 @@ class RambleDB {
             "forums" => array(
                 "pages" =>"SELECT CEIL(COUNT(*) / ?) FROM threads WHERE threads.forum_id = forums.id"
             ),
+            "users" => array (
+                "num_posts" => "(SELECT COUNT(*) FROM posts WHERE users.id = posts.user_id) + (SELECT COUNT(*) FROM threads WHERE users.id = threads.user_id)"
+            ),
         );
 
-        $this->tables = array( "threads", "posts", "forums" );
+        $this->tables = array( "threads", "posts", "forums", "users" );
+    }
+
+    private function to_singular( $table ) {
+        return substr( $table, 0, -1 );
+    }
+
+    private function key_to_sql( $table, $key ) {
+        if ( array_key_exists( $key, $this->special_keys[$table] ) ) {
+            return sprintf( "(%s) AS `%s.%s`", $this->special_keys[$table][$key], $table, $key );
+        } else {
+            return sprintf( "%s.%s AS `%s.%s`", $table, $key, $table, $key );
+        }
     }
 
     // construct a query given some options
@@ -45,12 +56,7 @@ class RambleDB {
         }
         $selects = array();
         foreach ( $options->keys as $key ) {
-            // if special key...
-            if ( array_key_exists( $key, $this->special_keys[$options->query] ) ) {
-                $selects[] = sprintf( "(%s) AS `%s.%s`", $this->special_keys[$options->query][$key], $options->query, $key );
-            } else {
-                $selects[] = sprintf( "%s.%s AS `%s.%s`", $options->query, $key, $options->query, $key );
-            }
+            $selects[] = $this->key_to_sql( $options->query, $key );
         }
         $joins = array();
         foreach ( $options->each as $table => $keys ) {
@@ -59,10 +65,10 @@ class RambleDB {
             }
             $joins[] = sprintf( "INNER JOIN %s ON %s.id=%s.%s_id", $table, $table, $options->query, $this->to_singular( $table ) );
             foreach ( $keys as $key ) {
-                $selects[] = sprintf( "%s.%s AS `%s.%s`", $table, $key, $table, $key );
+                $selects[] = $this->key_to_sql( $table, $key );
             }
         }
-        $result = sprintf( "SELECT %s FROM %s %s WHERE %s=?", implode( ", ", $selects ), $options->query, implode( ", ", $joins ), $options->where[0] );
+        $result = sprintf( "SELECT %s FROM %s %s WHERE %s.%s=?", implode( ", ", $selects ), $options->query, implode( " ", $joins ), $options->query, $options->where[0] );
         if ( $options->type === "list" ) {
             if ( array_key_exists( "order", $options ) ) {
                 $result .= sprintf( " ORDER BY %s %s", $options->order[0], $options->order[1] );
@@ -86,14 +92,20 @@ class RambleDB {
         foreach ( $queries as $options ) {
             $result = null;
 
-            $STH = $this->DBH->prepare( $this->construct( $options ) );
+            $sqlquery = $this->construct( $options );
+            $STH = $this->DBH->prepare( $sqlquery );
             $data = array();
             // pages requires per-page data
             if ( in_array( "pages", $options->keys ) ) {
                 $data[] = $options->paginate[1];
             }
             $data[] = $options->where[1];
-            $STH->execute( $data );
+            try {
+                $STH->execute( $data );
+            } catch( PDOException $e ) {
+                echo $e->getMessage();
+                echo "\nThe query was: '$sqlquery'";
+            }
 
             if ( $options->type === "indiv" ) {
                 $RES = $STH->fetch( PDO::FETCH_OBJ );
@@ -103,7 +115,7 @@ class RambleDB {
                         $table = $keyexp[0];
                         $key = $keyexp[1];
                         // format all dates
-                        if ( in_array( $key, ["date_posted", "last_date_posted"] ) ) {
+                        if ( in_array( $key, ["date_posted", "last_date_posted", "date_joined"] ) ) {
                             $value = date_format( date_create_from_format( "Y-m-d H:i:s", $value ), "F d, Y h:i:s A" );
                         }
                         if ( $table === $options->query ) {
