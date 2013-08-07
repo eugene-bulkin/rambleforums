@@ -157,6 +157,12 @@ var Pages = {
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
+                // back to forum list
+                html.append('<div class="backlink"><a>< Go Back to Forums</a></div>');
+                $('.backlink a')
+                    .on('click', function() {
+                    Pages.load("forums", "#page");
+                });
                 // build thread list
                 table = $("<table>");
                 tbody = $("<tbody>");
@@ -422,10 +428,20 @@ var Pages = {
                 var thread_body = $('<div id="thread_body">'),
                     posts = $('<div id="posts">'),
                     user_box, user_table,
+                    pages, pagearr, temparr,
+                    linktext, li, pagelink,
                     thread = data[0];
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
+                // back to forum
+                html.append('<div class="backlink">In <a>' + thread.forum.name + '</a></div>');
+                $(".backlink a")
+                    .on('click', null, thread.forum.id, function(e) {
+                    Pages.load("threads", "#page", {
+                        forum_id: e.data
+                    });
+                });
                 // thread first post
                 // create user box
                 user_box = $('<div class="user_box">');
@@ -439,39 +455,100 @@ var Pages = {
                 thread_body.append('<div class="post_title"><span>' + thread.title + '</span></div>');
                 thread_body.append('<div class="post_body"><span>' + thread.body + '</span></div>');
                 thread_body.append('<div class="post_foot"><span class="date_posted">Posted on ' + thread.date_posted + '</span></div>');
-                // get posts
-                $(data[1])
-                    .each(function() {
-                        var post = $('<div class="post">'),
-                            user_box, user_table;
-                        // create user box
-                        user_box = $('<div class="user_box">');
-                        user_box.append('<span class="username">' + this.user.username + '</span>');
-                        user_table = $('<table class="user_data">');
-                        user_table.append('<tr><th>Member since</th><td>' + this.user.date_joined + '</td></tr>');
-                        user_table.append('<tr><th>Total posts</th><td>' + this.user.num_posts + '</td></tr>');
-                        user_box.append(user_table);
-                        post.append(user_box);
-                        // create post body
-                        post.append('<div class="post_body"><span>' + this.body + '</span></div>');
-                        post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date_posted + '</span></div>');
-                        posts.append(post);
-                    });
+
                 html.append(thread_body);
-                html.append(posts);
+                // get posts
+                if (data[1].length > 0) {
+                    $(data[1])
+                        .each(function() {
+                            var post = $('<div class="post">'),
+                                user_box, user_table;
+                            // create user box
+                            user_box = $('<div class="user_box">');
+                            user_box.append('<span class="username">' + this.user.username + '</span>');
+                            user_table = $('<table class="user_data">');
+                            user_table.append('<tr><th>Member since</th><td>' + this.user.date_joined + '</td></tr>');
+                            user_table.append('<tr><th>Total posts</th><td>' + this.user.num_posts + '</td></tr>');
+                            user_box.append(user_table);
+                            post.append(user_box);
+                            // create post body
+                            post.append('<div class="post_body"><span>' + this.body + '</span></div>');
+                            post.append('<div class="post_foot"><span class="date_posted">Posted on ' + this.date_posted + '</span></div>');
+                            posts.append(post);
+                        });
+
+                    // page links
+                    pages = $('<div><ul id="pagelinks"></ul></div>');
+                    pagearr = [1, data.pages]; // initial pages
+                    if (opts.page === 1) {
+                        temparr = [1, 2, 3];
+                    } else if (opts.page === data.pages) {
+                        temparr = [data.pages - 2, data.pages - 1, data.pages];
+                    } else {
+                        temparr = [opts.page - 1, opts.page, opts.page + 1];
+                    }
+                    pagearr.splice(1, 0, temparr[0], temparr[1], temparr[2]); // last page
+                    if (data.pages <= 3) {
+                        pagearr = [1];
+                        pagearr.push(1);
+                        for (i = 2; i <= data.pages; i++) {
+                            pagearr.push(i);
+                        }
+                        pagearr.push(data.pages);
+                    }
+                    $(pagearr)
+                        .each(function(i) {
+                            switch (i) {
+                                case 0:
+                                    // first link
+                                    linktext = "<<";
+                                    break;
+                                case (pagearr.length - 1):
+                                    // last link
+                                    linktext = ">>";
+                                    break;
+                                default:
+                                    linktext = this;
+                                    break;
+                            }
+                            li = $('<li>');
+                            if (this !== opts.page) {
+                                pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
+                                pagelink.on('click', null, [this, opts.thread_id], function(e) {
+                                    Pages.load("thread", "#page", {
+                                        page: e.data[0],
+                                        thread_id: e.data[1]
+                                    });
+                                });
+                            } else {
+                                pagelink = $('<span>' + linktext + '</span>');
+                            }
+                            li.append(pagelink);
+                            pages.children('ul')
+                                .append(li);
+                        });
+
+                    posts.append(pages);
+
+                    html.append(posts);
+                }
             }
         });
 
         return html;
     },
 
-    load: function(mode, element, options) {
+    load: function(mode, element, options, firstLoad, noHistory) {
         "use strict";
+
+        firstLoad = firstLoad || false;
+        noHistory = noHistory || false;
 
         var state = {
             'mode': mode,
             'element': element,
-            'options': options
+            'options': options,
+            'rambleforums': true
         };
 
         switch (mode) {
@@ -496,18 +573,22 @@ var Pages = {
         }
 
         // add to history
-        if (history.state !== null) {
-            history.pushState(state);
-        } else {
-            history.replaceState(state);
+        if (!noHistory) {
+            if (!firstLoad) {
+                history.pushState(state);
+            } else {
+                history.replaceState(state);
 
-            $(window)
-                .on('popstate', Pages.processHistory);
+                $(window)
+                    .on('popstate', Pages.processHistory);
+            }
         }
     },
 
     processHistory: function(event) {
         var s = event.originalEvent.state;
-        Pages.load(s.mode, s.element, s.options);
+        if (s) {
+            Pages.load(s.mode, s.element, s.options, false, true);
+        }
     }
 };
