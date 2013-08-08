@@ -7,8 +7,13 @@ var Template = function (template) {
     this.regexes = {
         variable: /\{\{ ([\s\S]+?) \}\}/,
         each: /\{\{\{ each:(.+?) \}\}\}([\s\S]+?)\{\{\{ \/each \}\}\}/,
-        notnull: /\{\{\{ notnull:(.+?) \}\}\}([\s\S]+?)\{\{\{ \/notnull \}\}\}/,
-        isnull: /\{\{\{ isnull:(.+?) \}\}\}([\s\S]+?)\{\{\{ \/isnull \}\}\}/,
+        cond: "{{{ %%:(.+?) }}}([\\\s\\\S]+?){{{ \/%% }}}",
+    }
+
+    this.conditionals = {
+        notnull: function (val) { return (val !== null); },
+        isnull: function (val) { return (val === null); },
+        nonzero: function (val) { return (val > 0); }
     }
 
     $.ajax({
@@ -73,6 +78,7 @@ Template.prototype.apply = function(data, td) {
     var matchArr, repl,
         eachD, eachRes,
         variable, varVal, i, j,
+        k, regex,
         result = td,
         matches;
     // process each tag first because it has higher precedent
@@ -86,29 +92,21 @@ Template.prototype.apply = function(data, td) {
         }
         result = result.replace(matchArr[0], eachRes);
     }
-    // null/notnull tags
-    matches = this.getMatches(result, this.regexes.notnull);
-    for(i = 0; i < matches.length; i++) {
-        matchArr = matches[i];
-        // if null, remove data
-        if(this.getValue(data, matchArr[1]) === null) {
-            result = result.replace(matchArr[0], "");
-        }
-        // otherwise, strip tags
-        else {
-            result = result.replace(matchArr[0], matchArr[2]);
-        }
-    }
-    matches = this.getMatches(result, this.regexes.isnull);
-    for(i = 0; i < matches.length; i++) {
-        matchArr = matches[i];
-        // if not null, remove data
-        if(this.getValue(data, matchArr[1]) !== null) {
-            result = result.replace(matchArr[0], "");
-        }
-        // otherwise, strip tags
-        else {
-            result = result.replace(matchArr[0], matchArr[2]);
+    for(k in this.conditionals) {
+        if(this.conditionals.hasOwnProperty(k)) {
+            regex = new RegExp(this.regexes.cond.replace(/%%/g, k));
+            matches = this.getMatches(result, regex);
+            for(i = 0; i < matches.length; i++) {
+                matchArr = matches[i];
+                // if condition is fulfilled, strip tags
+                if(this.conditionals[k](this.getValue(data, matchArr[1]))) {
+                    result = result.replace(matchArr[0], matchArr[2]);
+                }
+                // otherwise, remove data
+                else {
+                    result = result.replace(matchArr[0], "");
+                }
+            }
         }
     }
     matches = this.getMatches(result, this.regexes.variable);
