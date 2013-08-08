@@ -1,0 +1,38 @@
+<div class="backlink">
+    <a>&lt; Go Back to Forums</a>
+</div>
+<table class="list" id="forum" cellspacing="0">
+    <caption>
+        {{ forum.name }}
+    </caption>
+    <thead>
+        <tr>
+            <th>Thread</th>
+            <th>Author</th>
+            <th>Replies</th>
+            <th>Last Post</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{{ each:threads }}}
+        <tr class="thread">
+            <td><a class="thread_link" id="tlid{{ id }}">{{ title }}</a></td>
+            <td><a>{{ user.username }}</a></td>
+            <td>{{ num_replies }}</td>
+            {{{ notnull:last_post }}}
+            <td>by <a>{{ last_post.user.username }}</a><br /><span class="date">{{ last_post.last_date_posted }}</span></td>
+            {{{ /notnull }}}
+            {{{ isnull:last_post }}}
+            <td>by <a>{{ user.username }}</a><br /><span class="date">{{ date_posted }}</span></td>
+            {{{ /isnull }}}
+        </tr>
+        {{{ /each }}}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="4">
+                <ul id="pagelinks"></ul>
+            </td>
+        </tr>
+    </tfoot>
+</table>

@@ -60,6 +60,7 @@ Not logged in. Please login or register to participate.
         <script src="js/ramble.login.js" type="text/javascript"></script>
         <script src="js/ramble.pages.js" type="text/javascript"></script>
         <script src="js/ramble.config.js" type="text/javascript"></script>
+        <script src="js/ramble.template.js" type="text/javascript"></script>
         <script src="js/ramble.js" type="text/javascript"></script>
 
         <link href="css/style.css" rel="stylesheet" type="text/css" />

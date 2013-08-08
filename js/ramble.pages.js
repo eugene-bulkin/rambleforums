@@ -152,56 +152,26 @@ var Pages = {
             },
             success: function(data) {
                 var i,
-                    table, tbody, forum, row, pagination,
-                    tfoot, pages, pagearr, temparr, li, pagelink, linktext;
+                    forum = data[0], row, pagination,
+                    pagearr, temparr, li, pagelink, linktext,
+                    template;
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
-                // back to forum list
-                html.append('<div class="backlink"><a>< Go Back to Forums</a></div>');
-                $('.backlink a')
-                    .on('click', function() {
+                // apply template
+                template = new Template("thread_list");
+                html.html(template.apply({forum: data[0], threads: data[1]}));
+
+                // process bindings
+                $('.backlink a').on('click', function() {
                     Pages.load("forums", "#page");
                 });
-                // build thread list
-                table = $("<table>");
-                tbody = $("<tbody>");
-                tfoot = $("<tfoot>");
-                forum = data[0];
 
-                table.addClass("list")
-                    .attr('id', 'forum')
-                    .attr('cellspacing', '0');
-                table.append("<caption>" + forum.name + "</caption>");
-                table.append("<thead><tr><th>Thread</th><th>Author</th><th>Replies</th><th>Last Post</th></tr></thead>");
-
-                $(data[1])
-                    .each(function() {
-                        row = $('<tr class="thread">');
-                        row.append('<td><a class="thread_link">' + this.title + "</a></td>");
-                        row.append("<td><a>" + this.user.username + "</a></td>");
-                        row.append("<td>" + this.num_replies + "</td>");
-                        // if there is a last post, say so; else it is the thread itself
-                        if (this.last_post !== null) {
-                            row.append('<td>by <a>' + this.last_post.user.username + '</a><br /><span class="date">' + this.last_post.last_date_posted + '</span></td>');
-                        } else {
-                            row.append('<td>by <a>' + this.user.username + '</a><br /><span class="date">' + this.date_posted + '</span></td>');
-                        }
-
-                        tbody.append(row);
-
-                        row.find('.thread_link')
-                            .on('click', null, this.id, function(e) {
-                                Pages.load("thread", "#page", {
-                                    thread_id: e.data
-                                });
-                            });
+                $('.thread_link').on('click', function() {
+                    Pages.load("thread", "#page", {
+                        thread_id: this.id.replace("tlid", "")
                     });
-
-                table.append(tbody);
-
-                tfoot.append('<tr></tr>');
-                pages = $('<td colspan="4"><ul id="pagelinks"></ul></td>');
+                });
 
                 // page links
                 pagearr = [1, forum.pages]; // initial pages
@@ -221,43 +191,35 @@ var Pages = {
                     }
                     pagearr.push(forum.pages);
                 }
-                $(pagearr)
-                    .each(function(i) {
-                        switch (i) {
-                            case 0:
-                                // first link
-                                linktext = "<<";
-                                break;
-                            case (pagearr.length - 1):
-                                // last link
-                                linktext = ">>";
-                                break;
-                            default:
-                                linktext = this;
-                                break;
-                        }
-                        li = $('<li>');
-                        if (this !== opts.page) {
-                            pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
-                            pagelink.on('click', null, [this, opts.forum_id], function(e) {
-                                Pages.load("threads", "#page", {
-                                    page: e.data[0],
-                                    forum_id: e.data[1]
-                                });
+                $(pagearr).each(function(i) {
+                    switch (i) {
+                        case 0:
+                            // first link
+                            linktext = "<<";
+                            break;
+                        case (pagearr.length - 1):
+                            // last link
+                            linktext = ">>";
+                            break;
+                        default:
+                            linktext = this;
+                            break;
+                    }
+                    li = $('<li>');
+                    if (this !== opts.page) {
+                        pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
+                        pagelink.on('click', null, [this, opts.forum_id], function(e) {
+                            Pages.load("threads", "#page", {
+                                page: e.data[0],
+                                forum_id: e.data[1]
                             });
-                        } else {
-                            pagelink = $('<span>' + linktext + '</span>');
-                        }
-                        li.append(pagelink);
-                        pages.children('ul')
-                            .append(li);
-                    });
-
-                tfoot.children('tr')
-                    .append(pages);
-                table.append(tfoot);
-
-                html.append(table);
+                        });
+                    } else {
+                        pagelink = $('<span>' + linktext + '</span>');
+                    }
+                    li.append(pagelink);
+                    $('#pagelinks').append(li);
+                });
             }
         });
 
