@@ -1,0 +1,48 @@
+{{{ each:fg }}}
+<table class="list" id="fg{{ id }}" cellspacing="0">
+    <caption>
+        {{ name }}
+    </caption>
+    <thead>
+        <tr>
+            <th>
+                Forum
+            </th>
+            <th>
+                Threads
+            </th>
+            <th>
+                Last Post
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {{{ each:forums }}}
+        <tr class="forum">
+            <td>
+                <h1>
+                    <a>{{ name }}</a>
+                </h1><br>
+                {{ description }}
+            </td>
+            <td>
+                {{ num_threads }}
+            </td>
+            {{{ notnull:last_post }}}
+            <td>by <a>{{ last_post.user.username }}</a><br /><span class="date">{{ last_post.last_date_posted }}</span></td>
+            {{{ /notnull }}}
+            {{{ isnull:last_post }}}
+            <td>No posts in this forum.</td>
+            {{{ /isnull }}}
+        </tr>
+        {{{ /each:forums }}}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3">
+                Total threads: {{{ sum:forums:num_threads }}}
+            </td>
+        </tr>
+    </tfoot>
+</table>
+{{{ /each:fg }}}

@@ -44,62 +44,31 @@ var Pages = {
                     frm_ord = data[0].forum_order,
                     fgrps = {}, forums = {},
                     fgrp, ord, table, tbody, thread_count,
-                    row, forum, lastp;
+                    row, forum, lastp,
+                    template, template_data;
                 // turn forum groups and forums into associative arrays
-                $(data[1])
-                    .each(function() {
+                $(data[1]).each(function() {
                         fgrps[this.id] = this;
                     });
-                $(data[2])
-                    .each(function() {
+                $(data[2]).each(function() {
                         forums[this.id] = this;
                     });
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
-                // process forum groups
-                for (i = 0; i < grp_ord.length; i++) {
+                template = new Template("forums");
+                template_data = {fg: []};
+                for(i = 0; i < grp_ord.length; i++) {
                     fgrp = fgrps[grp_ord[i]];
+                    fgrp.forums = [];
                     ord = frm_ord[fgrp.id];
-                    table = $("<table>");
-                    tbody = $("<tbody>");
-                    thread_count = 0;
-                    table.addClass("list")
-                        .attr("id", "fg" + fgrp.id);
-                    table.attr("cellspacing", "0");
-                    table.append("<caption>" + fgrp.name + "</caption>");
-                    table.append("<thead><tr><th>Forum</th><th>Threads</th><th>Last Post</th></tr></thead>");
-                    // add forum list
                     for (j = 0; j < ord.length; j++) {
-                        row = $('<tr class="forum">');
                         forum = forums[ord[j]];
-                        lastp = forum.last_post;
-                        row.append('<td><h1><a>' + forum.name + '</a></h1><br />' + forum.description + '</td>');
-
-                        row.append('<td>' + forum.num_threads + '</td>');
-                        if (lastp === null) {
-                            row.append('<td>No posts in this forum</td>');
-                        } else {
-                            row.append('<td>by <a>' + lastp.user.username + '</a><br /><span class="date">' + lastp.last_date_posted + '</span></td>');
-                        }
-                        tbody.append(row);
-
-                        thread_count += Number(forum.num_threads);
-
-                        // bind forum to go to thread list
-                        row.find('h1 a')
-                            .on('click', null, forum.id, function(e) {
-                                Pages.load("threads", "#page", {
-                                    forum_id: e.data
-                                });
-                            });
+                        fgrp.forums.push(forum);
                     }
-                    table.append(tbody);
-
-                    table.append('<tfoot><tr><td colspan="3">Total threads: ' + thread_count + '</td></tr></tfoot>');
-
-                    html.append(table);
+                    template_data.fg.push(fgrp);
                 }
+                html.html(template.apply(template_data));
             }
         });
 

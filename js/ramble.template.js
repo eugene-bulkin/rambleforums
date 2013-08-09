@@ -6,7 +6,8 @@ var Template = function (template) {
 
     this.regexes = {
         variable: /\{\{ ([\s\S]+?) \}\}/,
-        each: /\{\{\{ each:(.+?) \}\}\}([\s\S]+?)\{\{\{ \/each \}\}\}/,
+        each: /\{\{\{ each:(.+?) \}\}\}([\s\S]+?)\{\{\{ \/each:\1 \}\}\}/,
+        sum: /\{\{\{ sum:(.+?):(.+?) \}\}\}/,
         cond: "{{{ %%:(.+?) }}}([\\\s\\\S]+?){{{ \/%% }}}",
     }
 
@@ -78,13 +79,13 @@ Template.prototype.apply = function(data, td) {
     var matchArr, repl,
         eachD, eachRes,
         variable, varVal, i, j,
-        k, regex,
+        k, regex, sum,
+        sumParent, sumChild,
         result = td,
         matches;
     // process each tag first because it has higher precedent
-    matches = this.getMatches(result, this.regexes.each);
-    for(i = 0; i < matches.length; i++) {
-        matchArr = matches[i];
+    // have to do in loop in case of nesting
+    while((matchArr = result.match(this.regexes.each)) !== null) {
         eachD = this.getValue(data, matchArr[1]);
         eachRes = "";
         for(j = 0; j < eachD.length; j++) {
@@ -92,6 +93,18 @@ Template.prototype.apply = function(data, td) {
         }
         result = result.replace(matchArr[0], eachRes);
     }
+    // other tags
+    matches = this.getMatches(result, this.regexes.sum);
+    for(i = 0; i < matches.length; i++) {
+        matchArr = matches[i];
+        sum = 0;
+        sumParent = this.getValue(data, matchArr[1]);
+        for(j = 0; j < sumParent.length; j++) {
+            sum += Number(this.getValue(sumParent[j], matchArr[2]));
+        }
+        result = result.replace(matchArr[0], sum);
+    }
+    // process conditional tags
     for(k in this.conditionals) {
         if(this.conditionals.hasOwnProperty(k)) {
             regex = new RegExp(this.regexes.cond.replace(/%%/g, k));
