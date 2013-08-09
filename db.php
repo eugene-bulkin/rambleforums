@@ -142,6 +142,9 @@ class RambleDB {
                         if ( in_array( $key, ["date_posted", "last_date_posted", "date_joined"] ) ) {
                             $value = date_format( date_create_from_format( "Y-m-d H:i:s", $value ), "F d, Y h:i:s A" );
                         }
+                        if ( in_array( $key, ["pages"] ) ) {
+                            $value = intval($value);
+                        }
                         if ( $table === $options->query ) {
                             $result[$key] = $value;
                         } else {
