@@ -6,7 +6,7 @@ var Config = {
         // disable sorting while we process
         $("#forum_groups").sortable('disable');
         $(".forumSortable").sortable('disable');
-        $("#page").append('<center><br /><img src="images/loading.gif" /></center>');
+        $("#loading").html('<br /><img src="images/loading.gif" />');
         // process data
         var grp_ord = [];
         $("#forum_groups div.fgroup").each(function(i, el) {
@@ -24,7 +24,7 @@ var Config = {
                 if (data === true) {
                     $("#forum_groups").sortable('enable');
                     $(".forumSortable").sortable('enable');
-                    $("#page center").remove();
+                    $("#loading").html('');
                 }
             }
         });
@@ -34,7 +34,7 @@ var Config = {
         // disable sorting while we process
         $("#forum_groups").sortable('disable');
         $(".forumSortable").sortable('disable');
-        $("#page").append('<center><br /><img src="images/loading.gif" /></center>');
+        $("#loading").html('<br /><img src="images/loading.gif" />');
         // process data
         var forum_ord = {};
         $("#forum_groups div.fgroup").each(function(i, el) {
@@ -57,7 +57,7 @@ var Config = {
                 if (data === true) {
                     $("#forum_groups").sortable('enable');
                     $(".forumSortable").sortable('enable');
-                    $("#page center").remove();
+                    $("#loading").html('');
                 }
             }
         });

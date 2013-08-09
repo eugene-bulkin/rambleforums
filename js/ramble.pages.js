@@ -307,6 +307,8 @@ var Pages = {
                         revert: true
                     })
                     .disableSelection();
+
+                html.append('<center id="loading"></center>');
             }
         });
 
