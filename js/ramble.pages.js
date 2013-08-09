@@ -69,6 +69,12 @@ var Pages = {
                     template_data.fg.push(fgrp);
                 }
                 html.html(template.apply(template_data));
+                // process bindings
+                $('.forum_link').on('click', function() {
+                    Pages.load("threads", "#page", {
+                        forum_id: this.id.replace("flid", "")
+                    });
+                });
             }
         });
 
