@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL);
+error_reporting( E_ALL );
 /*
  * Enter your database connection information here.
  *

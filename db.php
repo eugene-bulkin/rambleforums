@@ -38,16 +38,16 @@ class RambleDB {
         $this->tables = array( "threads", "posts", "forums", "forum_groups", "users" );
 
         $this->key_types = array (
-            "numbers" => array("id", "pages", "num_replies", "num_threads", "num_posts"),
-            "dates" => array("last_date_posted", "date_posted", "date_joined")
+            "numbers" => array( "id", "pages", "num_replies", "num_threads", "num_posts" ),
+            "dates" => array( "last_date_posted", "date_posted", "date_joined" )
         );
     }
 
-    private function process_type($key, $value) {
-        if(in_array($key, $this->key_types["numbers"])) {
-            return intval($value);
+    private function process_type( $key, $value ) {
+        if ( in_array( $key, $this->key_types["numbers"] ) ) {
+            return intval( $value );
         }
-        if(in_array($key, $this->key_types["dates"])) {
+        if ( in_array( $key, $this->key_types["dates"] ) ) {
             return date_format( date_create_from_format( "Y-m-d H:i:s", $value ), "F d, Y h:i:s A" );
         }
         return $value;
@@ -154,9 +154,9 @@ class RambleDB {
                         $table = $keyexp[0];
                         $key = $keyexp[1];
                         if ( $table === $options->query ) {
-                            $result[$key] = $this->process_type($key, $value);
+                            $result[$key] = $this->process_type( $key, $value );
                         } else {
-                            $result[$this->to_singular( $table )][$key] = $this->process_type($key, $value);
+                            $result[$this->to_singular( $table )][$key] = $this->process_type( $key, $value );
                         }
                     }
                 }
@@ -173,9 +173,9 @@ class RambleDB {
                         $table = $keyexp[0];
                         $key = $keyexp[1];
                         if ( $table === $options->query ) {
-                            $row_result[$key] = $this->process_type($key, $value);
+                            $row_result[$key] = $this->process_type( $key, $value );
                         } else {
-                            $row_result[$this->to_singular( $table )][$key] = $this->process_type($key, $value);
+                            $row_result[$this->to_singular( $table )][$key] = $this->process_type( $key, $value );
                         }
                     }
 

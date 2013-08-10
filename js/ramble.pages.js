@@ -1,7 +1,7 @@
 /*jslint browser: true, devel: true, plusplus: true, indent: 4, unparam: true */
-/*globals $: false, Pages: false, Config: false, Login: false */
+/*globals $: false, Pages: false, Config: false, Login: false, Template: false */
 var Pages = {
-    forums: function() {
+    forums: function () {
         "use strict";
         var html = $('<div id="forums"></div>'),
             sql = [];
@@ -16,7 +16,7 @@ var Pages = {
             type: "list",
             query: "forum_groups",
             keys: ["id", "name"],
-            each: {},
+            each: {}
         };
         // get forums
         sql[2] = {
@@ -33,32 +33,33 @@ var Pages = {
                 options: JSON.stringify(sql)
             },
             dataType: "json",
-            beforeSend: function() {
+            beforeSend: function () {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
             },
-            success: function(data) {
+            success: function (data) {
                 var i, j,
                     grp_ord = data[0].group_order,
                     frm_ord = data[0].forum_order,
                     fgrps = {}, forums = {},
-                    fgrp, ord, table, tbody, thread_count,
-                    row, forum, lastp,
+                    fgrp, ord, forum,
                     template, template_data;
                 // turn forum groups and forums into associative arrays
-                $(data[1]).each(function() {
-                        fgrps[this.id] = this;
-                    });
-                $(data[2]).each(function() {
-                        forums[this.id] = this;
-                    });
+                $(data[1]).each(function () {
+                    fgrps[this.id] = this;
+                });
+                $(data[2]).each(function () {
+                    forums[this.id] = this;
+                });
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
                 template = new Template("forums");
-                template_data = {fg: []};
-                for(i = 0; i < grp_ord.length; i++) {
+                template_data = {
+                    fg: []
+                };
+                for (i = 0; i < grp_ord.length; i++) {
                     fgrp = fgrps[grp_ord[i]];
                     fgrp.forums = [];
                     ord = frm_ord[fgrp.id];
@@ -70,7 +71,7 @@ var Pages = {
                 }
                 html.html(template.apply(template_data));
                 // process bindings
-                $('.forum_link').on('click', function() {
+                $('.forum_link').on('click', function () {
                     Pages.load("threads", "#page", {
                         forum_id: this.id.replace("flid", "")
                     });
@@ -81,7 +82,7 @@ var Pages = {
         return html;
     },
 
-    threads: function(options) {
+    threads: function (options) {
         "use strict";
         var html = $('<div id="threads"></div>'),
             defaults = {
@@ -120,14 +121,14 @@ var Pages = {
                 options: JSON.stringify(sql)
             },
             dataType: "json",
-            beforeSend: function() {
+            beforeSend: function () {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
             },
-            success: function(data) {
+            success: function (data) {
                 var i,
-                    forum = data[0], row, pagination,
+                    forum = data[0],
                     pagearr, temparr, li, pagelink, linktext,
                     template;
                 // remove loading gif
@@ -135,14 +136,17 @@ var Pages = {
                 html.attr('style', null);
                 // apply template
                 template = new Template("thread_list");
-                html.html(template.apply({forum: data[0], threads: data[1]}));
+                html.html(template.apply({
+                    forum: data[0],
+                    threads: data[1]
+                }));
 
                 // process bindings
-                $('.backlink a').on('click', function() {
+                $('.backlink a').on('click', function () {
                     Pages.load("forums", "#page");
                 });
 
-                $('.thread_link').on('click', function() {
+                $('.thread_link').on('click', function () {
                     Pages.load("thread", "#page", {
                         thread_id: this.id.replace("tlid", "")
                     });
@@ -166,24 +170,24 @@ var Pages = {
                     }
                     pagearr.push(forum.pages);
                 }
-                $(pagearr).each(function(i) {
+                $(pagearr).each(function (i) {
                     switch (i) {
-                        case 0:
-                            // first link
-                            linktext = "<<";
-                            break;
-                        case (pagearr.length - 1):
-                            // last link
-                            linktext = ">>";
-                            break;
-                        default:
-                            linktext = this;
-                            break;
+                    case 0:
+                        // first link
+                        linktext = "<<";
+                        break;
+                    case (pagearr.length - 1):
+                        // last link
+                        linktext = ">>";
+                        break;
+                    default:
+                        linktext = this;
+                        break;
                     }
                     li = $('<li>');
                     if (this !== opts.page) {
                         pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
-                        pagelink.on('click', null, [this, opts.forum_id], function(e) {
+                        pagelink.on('click', null, [this, opts.forum_id], function (e) {
                             Pages.load("threads", "#page", {
                                 page: e.data[0],
                                 forum_id: e.data[1]
@@ -201,7 +205,7 @@ var Pages = {
         return html;
     },
 
-    group_order: function() {
+    group_order: function () {
         "use strict";
         var html = $('<div id="group_order"></div>'),
             sql = [];
@@ -216,7 +220,7 @@ var Pages = {
             type: "list",
             query: "forum_groups",
             keys: ["id", "name"],
-            each: {},
+            each: {}
         };
         // get forums
         sql[2] = {
@@ -232,12 +236,12 @@ var Pages = {
                 options: JSON.stringify(sql)
             },
             dataType: "json",
-            beforeSend: function() {
+            beforeSend: function () {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
             },
-            success: function(data) {
+            success: function (data) {
                 var fghtml = $('<div id="forum_groups">'),
                     i,
                     j,
@@ -253,11 +257,11 @@ var Pages = {
                     li;
                 // turn forum groups and forums into associative arrays
                 $(data[1])
-                    .each(function() {
+                    .each(function () {
                         fgrps[this.id] = this;
                     });
                 $(data[2])
-                    .each(function() {
+                    .each(function () {
                         forums[this.id] = this;
                     });
                 // remove loading gif
@@ -315,7 +319,7 @@ var Pages = {
         return html;
     },
 
-    thread: function(options) {
+    thread: function (options) {
         "use strict";
         var html = $('<div id="thread"></div>'),
             defaults = {
@@ -356,12 +360,12 @@ var Pages = {
                 options: JSON.stringify(sql)
             },
             dataType: "json",
-            beforeSend: function() {
+            beforeSend: function () {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
             },
-            success: function(data) {
+            success: function (data) {
                 var template, i,
                     pagearr, temparr,
                     linktext, li, pagelink,
@@ -371,9 +375,11 @@ var Pages = {
                 html.attr('style', null);
                 // apply template
                 template = new Template("thread");
-                html.html(template.apply($.extend(thread, {posts: data[1]})));
+                html.html(template.apply($.extend(thread, {
+                    posts: data[1]
+                })));
                 // process bindings
-                $(".backlink a").on('click', null, thread.forum.id, function(e) {
+                $(".backlink a").on('click', null, thread.forum.id, function (e) {
                     Pages.load("threads", "#page", {
                         forum_id: e.data
                     });
@@ -396,42 +402,42 @@ var Pages = {
                     }
                     pagearr.push(thread.pages);
                 }
-                $(pagearr).each(function(i) {
-                        switch (i) {
-                            case 0:
-                                // first link
-                                linktext = "<<";
-                                break;
-                            case (pagearr.length - 1):
-                                // last link
-                                linktext = ">>";
-                                break;
-                            default:
-                                linktext = this;
-                                break;
-                        }
-                        li = $('<li>');
-                        if (this !== opts.page) {
-                            pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
-                            pagelink.on('click', null, [this, opts.thread_id], function(e) {
-                                Pages.load("thread", "#page", {
-                                    page: e.data[0],
-                                    thread_id: e.data[1]
-                                });
+                $(pagearr).each(function (i) {
+                    switch (i) {
+                    case 0:
+                        // first link
+                        linktext = "<<";
+                        break;
+                    case (pagearr.length - 1):
+                        // last link
+                        linktext = ">>";
+                        break;
+                    default:
+                        linktext = this;
+                        break;
+                    }
+                    li = $('<li>');
+                    if (this !== opts.page) {
+                        pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
+                        pagelink.on('click', null, [this, opts.thread_id], function (e) {
+                            Pages.load("thread", "#page", {
+                                page: e.data[0],
+                                thread_id: e.data[1]
                             });
-                        } else {
-                            pagelink = $('<span>' + linktext + '</span>');
-                        }
-                        li.append(pagelink);
-                        $('#pagelinks').append(li);
-                    });
+                        });
+                    } else {
+                        pagelink = $('<span>' + linktext + '</span>');
+                    }
+                    li.append(pagelink);
+                    $('#pagelinks').append(li);
+                });
             }
         });
 
         return html;
     },
 
-    load: function(mode, element, options, firstLoad, noHistory) {
+    load: function (mode, element, options, firstLoad, noHistory) {
         "use strict";
 
         firstLoad = firstLoad || false;
@@ -445,24 +451,24 @@ var Pages = {
         };
 
         switch (mode) {
-            case "forums":
-                $(element)
-                    .html(Pages.forums());
-                break;
-            case "threads":
-                $(element)
-                    .html(Pages.threads(options));
-                break;
-            case "thread":
-                $(element)
-                    .html(Pages.thread(options));
-                break;
-            case "group_order":
-                $(element)
-                    .html(Pages.group_order());
-                break;
-            default:
-                break;
+        case "forums":
+            $(element)
+                .html(Pages.forums());
+            break;
+        case "threads":
+            $(element)
+                .html(Pages.threads(options));
+            break;
+        case "thread":
+            $(element)
+                .html(Pages.thread(options));
+            break;
+        case "group_order":
+            $(element)
+                .html(Pages.group_order());
+            break;
+        default:
+            break;
         }
 
         // add to history
@@ -478,7 +484,8 @@ var Pages = {
         }
     },
 
-    processHistory: function(event) {
+    processHistory: function (event) {
+        "use strict";
         var s = event.originalEvent.state;
         if (s) {
             Pages.load(s.mode, s.element, s.options, false, true);
