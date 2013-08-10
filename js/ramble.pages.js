@@ -1,6 +1,69 @@
 /*jslint browser: true, devel: true, plusplus: true, indent: 4, unparam: true */
 /*globals $: false, Pages: false, Config: false, Login: false, Template: false */
 var Pages = {
+    page_links: function (cur_page, num_pages, mode, id) {
+        "use strict";
+        var pagearr, temparr, i,
+            li, linktext, pagelink,
+            pageBinding;
+        // page links
+        pagearr = [1, num_pages]; // initial pages
+        if (cur_page === 1) {
+            temparr = [1, 2, 3];
+        } else if (cur_page === num_pages) {
+            temparr = [num_pages - 2, num_pages - 1, num_pages];
+        } else {
+            temparr = [cur_page - 1, cur_page, cur_page + 1];
+        }
+        pagearr.splice(1, 0, temparr[0], temparr[1], temparr[2]); // last page
+        if (num_pages <= 3) {
+            pagearr = [1];
+            pagearr.push(1);
+            for (i = 2; i <= num_pages; i++) {
+                pagearr.push(i);
+            }
+            pagearr.push(num_pages);
+        }
+        $(pagearr).each(function (i) {
+            switch (i) {
+            case 0:
+                // first link
+                linktext = "<<";
+                break;
+            case (pagearr.length - 1):
+                // last link
+                linktext = ">>";
+                break;
+            default:
+                linktext = this;
+                break;
+            }
+            li = $('<li>');
+            if (this !== cur_page) {
+                pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
+                if (mode === "forum") {
+                    pageBinding = function (e) {
+                        Pages.load("threads", "#page", {
+                            page: e.data[0],
+                            forum_id: e.data[1]
+                        });
+                    };
+                } else {
+                    pageBinding = function (e) {
+                        Pages.load("thread", "#page", {
+                            page: e.data[0],
+                            thread_id: e.data[1]
+                        });
+                    };
+                }
+                pagelink.on('click', null, [this, id], pageBinding);
+            } else {
+                pagelink = $('<span>' + linktext + '</span>');
+            }
+            li.append(pagelink);
+            $('#pagelinks').append(li);
+        });
+    },
     forums: function () {
         "use strict";
         var html = $('<div id="forums"></div>'),
@@ -127,9 +190,7 @@ var Pages = {
                 html.html('<img src="images/loading.gif" />');
             },
             success: function (data) {
-                var i,
-                    forum = data[0],
-                    pagearr, temparr, li, pagelink, linktext,
+                var forum = data[0],
                     template;
                 // remove loading gif
                 html.html('');
@@ -152,53 +213,7 @@ var Pages = {
                     });
                 });
 
-                // page links
-                pagearr = [1, forum.pages]; // initial pages
-                if (opts.page === 1) {
-                    temparr = [1, 2, 3];
-                } else if (opts.page === forum.pages) {
-                    temparr = [forum.pages - 2, forum.pages - 1, forum.pages];
-                } else {
-                    temparr = [opts.page - 1, opts.page, opts.page + 1];
-                }
-                pagearr.splice(1, 0, temparr[0], temparr[1], temparr[2]); // last page
-                if (forum.pages <= 3) {
-                    pagearr = [1];
-                    pagearr.push(1);
-                    for (i = 2; i <= forum.pages; i++) {
-                        pagearr.push(i);
-                    }
-                    pagearr.push(forum.pages);
-                }
-                $(pagearr).each(function (i) {
-                    switch (i) {
-                    case 0:
-                        // first link
-                        linktext = "<<";
-                        break;
-                    case (pagearr.length - 1):
-                        // last link
-                        linktext = ">>";
-                        break;
-                    default:
-                        linktext = this;
-                        break;
-                    }
-                    li = $('<li>');
-                    if (this !== opts.page) {
-                        pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
-                        pagelink.on('click', null, [this, opts.forum_id], function (e) {
-                            Pages.load("threads", "#page", {
-                                page: e.data[0],
-                                forum_id: e.data[1]
-                            });
-                        });
-                    } else {
-                        pagelink = $('<span>' + linktext + '</span>');
-                    }
-                    li.append(pagelink);
-                    $('#pagelinks').append(li);
-                });
+                Pages.page_links(opts.page, forum.pages, "forum", opts.forum_id);
             }
         });
 
@@ -248,7 +263,8 @@ var Pages = {
                     grp_ord = data[0].group_order,
                     frm_ord = data[0].forum_order,
                     wClasses = "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all",
-                    fgrps = {}, forums = {},
+                    fgrps = {},
+                    forums = {},
                     fgrp,
                     ord,
                     div,
@@ -366,9 +382,7 @@ var Pages = {
                 html.html('<img src="images/loading.gif" />');
             },
             success: function (data) {
-                var template, i,
-                    pagearr, temparr,
-                    linktext, li, pagelink,
+                var template,
                     thread = data[0];
                 // remove loading gif
                 html.html('');
@@ -384,53 +398,8 @@ var Pages = {
                         forum_id: e.data
                     });
                 });
-                // page links
-                pagearr = [1, thread.pages]; // initial pages
-                if (opts.page === 1) {
-                    temparr = [1, 2, 3];
-                } else if (opts.page === thread.pages) {
-                    temparr = [thread.pages - 2, thread.pages - 1, thread.pages];
-                } else {
-                    temparr = [opts.page - 1, opts.page, opts.page + 1];
-                }
-                pagearr.splice(1, 0, temparr[0], temparr[1], temparr[2]); // last page
-                if (thread.pages <= 3) {
-                    pagearr = [1];
-                    pagearr.push(1);
-                    for (i = 2; i <= thread.pages; i++) {
-                        pagearr.push(i);
-                    }
-                    pagearr.push(thread.pages);
-                }
-                $(pagearr).each(function (i) {
-                    switch (i) {
-                    case 0:
-                        // first link
-                        linktext = "<<";
-                        break;
-                    case (pagearr.length - 1):
-                        // last link
-                        linktext = ">>";
-                        break;
-                    default:
-                        linktext = this;
-                        break;
-                    }
-                    li = $('<li>');
-                    if (this !== opts.page) {
-                        pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
-                        pagelink.on('click', null, [this, opts.thread_id], function (e) {
-                            Pages.load("thread", "#page", {
-                                page: e.data[0],
-                                thread_id: e.data[1]
-                            });
-                        });
-                    } else {
-                        pagelink = $('<span>' + linktext + '</span>');
-                    }
-                    li.append(pagelink);
-                    $('#pagelinks').append(li);
-                });
+
+                Pages.page_links(opts.page, thread.pages, "thread", opts.thread_id);
             }
         });
 
@@ -452,20 +421,16 @@ var Pages = {
 
         switch (mode) {
         case "forums":
-            $(element)
-                .html(Pages.forums());
+            $(element).html(Pages.forums());
             break;
         case "threads":
-            $(element)
-                .html(Pages.threads(options));
+            $(element).html(Pages.threads(options));
             break;
         case "thread":
-            $(element)
-                .html(Pages.thread(options));
+            $(element).html(Pages.thread(options));
             break;
         case "group_order":
-            $(element)
-                .html(Pages.group_order());
+            $(element).html(Pages.group_order());
             break;
         default:
             break;
@@ -478,8 +443,7 @@ var Pages = {
             } else {
                 history.replaceState(state);
 
-                $(window)
-                    .on('popstate', Pages.processHistory);
+                $(window).on('popstate', Pages.processHistory);
             }
         }
     },
