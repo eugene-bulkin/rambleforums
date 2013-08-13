@@ -9,7 +9,7 @@ var Template = function (template) {
         variable: /\{\{ ([\s\S]+?) \}\}/,
         each: /\{\{\{ each:(\w+?) \}\}\}([\s\S]+?)\{\{\{ \/each:\1 \}\}\}/,
         sum: /\{\{\{ sum:(\w+?):(\w+?) \}\}\}/,
-        cond: "{{{ %%:(\\\w+?) }}}([\\\s\\\S]+?){{{ \/%% }}}"
+        cond: "{{{ %%:([\\\w\\\.]+?) }}}([\\\s\\\S]+?){{{ \/%% }}}"
     };
 
     this.conditionals = {
