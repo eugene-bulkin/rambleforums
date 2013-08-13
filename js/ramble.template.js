@@ -24,18 +24,26 @@ var Template = function (template) {
         }
     };
 
-    $.ajax({
-        url: "templates/" + this.template + ".html",
-        dataType: "html",
-        cache: false,
-        async: false, // do not allow anything else to happen until template is loaded!
-        success: function (data) {
-            this.template_data = data;
-        }.bind(this)
-    });
+    if(Template.cache[this.template] !== undefined) {
+        // template already loaded this session, so load from cache
+        this.template_data = Template.cache[this.template];
+    } else {
+        $.ajax({
+            url: "templates/" + this.template + ".html",
+            dataType: "html",
+            cache: false,
+            async: false, // do not allow anything else to happen until template is loaded!
+            success: function (data) {
+                this.template_data = data;
+                Template.cache[this.template] = data;
+            }.bind(this)
+        });
+    }
 
     return this;
 };
+
+Template.cache = {};
 
 // from http://cwestblog.com/2011/11/14/javascript-snippet-regexp-prototype-clone/
 RegExp.prototype.clone = function (options) {
