@@ -3,7 +3,7 @@
 </div>
 <table class="list" id="forum" cellspacing="0">
     <caption>
-        {{ forum.name }}
+        {{forum.name}}
     </caption>
     <thead>
         <tr>
@@ -14,19 +14,19 @@
         </tr>
     </thead>
     <tbody>
-        {{{ each:threads }}}
+        {{#threads}}
         <tr class="thread">
-            <td><a class="thread_link" id="tlid{{ id }}">{{ title }}</a></td>
-            <td><a>{{ user.username }}</a></td>
-            <td>{{ num_replies }}</td>
-            {{{ notnull:last_post }}}
-            <td>by <a>{{ last_post.user.username }}</a><br /><span class="date">{{ last_post.last_date_posted }}</span></td>
-            {{{ /notnull }}}
-            {{{ isnull:last_post }}}
-            <td>by <a>{{ user.username }}</a><br /><span class="date">{{ date_posted }}</span></td>
-            {{{ /isnull }}}
+            <td><a class="thread_link" id="tlid{{id}}">{{title}}</a></td>
+            <td><a>{{user.username}}</a></td>
+            <td>{{num_replies}}</td>
+            {{#last_post}}
+            <td>by <a>{{last_post.user.username}}</a><br /><span class="date">{{last_post.last_date_posted}}</span></td>
+            {{/last_post}}
+            {{^last_post}}
+            <td>by <a>{{user.username}}</a><br /><span class="date">{{date_posted}}</span></td>
+            {{/last_post}}
         </tr>
-        {{{ /each:threads }}}
+        {{/threads}}
     </tbody>
     <tfoot>
         <tr>
