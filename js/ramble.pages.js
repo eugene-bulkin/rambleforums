@@ -125,9 +125,11 @@ var Pages = {
                 for (i = 0; i < grp_ord.length; i++) {
                     fgrp = fgrps[grp_ord[i]];
                     fgrp.forums = [];
+                    fgrp.total_threads = 0;
                     ord = frm_ord[fgrp.id];
                     for (j = 0; j < ord.length; j++) {
                         forum = forums[ord[j]];
+                        fgrp.total_threads += forum.num_threads;
                         fgrp.forums.push(forum);
                     }
                     template_data.fg.push(fgrp);
