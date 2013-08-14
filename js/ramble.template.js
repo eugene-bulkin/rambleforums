@@ -5,25 +5,6 @@ var Template = function (template) {
     this.template = template;
     this.template_data = null;
 
-    this.regexes = {
-        variable: /\{\{ ([\s\S]+?) \}\}/,
-        each: /\{\{\{ each:(\w+?) \}\}\}([\s\S]+?)\{\{\{ \/each:\1 \}\}\}/,
-        sum: /\{\{\{ sum:(\w+?):(\w+?) \}\}\}/,
-        cond: "{{{ %%:(\\\w+?) }}}([\\\s\\\S]+?){{{ \/%% }}}"
-    };
-
-    this.conditionals = {
-        notnull: function (val) {
-            return (val !== null);
-        },
-        isnull: function (val) {
-            return (val === null);
-        },
-        nonzero: function (val) {
-            return (val > 0);
-        }
-    };
-
     $.ajax({
         url: "templates/" + this.template + ".html",
         dataType: "html",
@@ -35,26 +16,6 @@ var Template = function (template) {
     });
 
     return this;
-};
-
-// from http://cwestblog.com/2011/11/14/javascript-snippet-regexp-prototype-clone/
-RegExp.prototype.clone = function (options) {
-    "use strict";
-    // If the options are not in string format...
-    if (options + "" !== options) {
-        // If the options evaluate to true, use the properties to construct
-        // the flags.
-        if (options) {
-            options = (options.ignoreCase ? "i" : "") + (options.global ? "g" : "") + (options.multiline ? "m" : "") + (options.sticky ? "y" : "");
-        } else {
-            // If the options evaluate to false, use the current flags.
-            options = (this + "").replace(/[\s\S]+\//, "");
-        }
-    }
-
-    // Return the new regular expression, making sure to only include the
-    // sticky flag if it is available.
-    return new RegExp(this.source, options);//.replace("y", ("sticky" in /s/ ? "y" : "")));
 };
 
 Template.prototype.apply = function (data) {
