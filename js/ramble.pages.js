@@ -392,7 +392,8 @@ var Pages = {
                 // apply template
                 template = new Template("thread");
                 html.html(template.apply($.extend(thread, {
-                    posts: data[1]
+                    posts: data[1],
+                    has_posts: (data[1].length > 0)
                 })));
                 // process bindings
                 $(".backlink a").on('click', null, thread.forum.id, function (e) {
