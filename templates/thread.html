@@ -1,62 +1,61 @@
-
 <div class="backlink">
-In <a>{{ forum.name }}</a>
+In <a>{{forum.name}}</a>
 </div>
 <div id="thread_body">
     <div class="user_box">
-        <span class="username">{{ user.username }}</span>
+        <span class="username">{{user.username}}</span>
         <table class="user_data">
             <tbody>
                 <tr>
                     <th>Member since</th>
-                    <td>{{ user.date_joined }}</td>
+                    <td>{{user.date_joined}}</td>
                 </tr>
                 <tr>
                     <th>Total posts</th>
-                    <td>{{ user.num_posts }}</td>
+                    <td>{{user.num_posts}}</td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="post_title">
-        <span>{{ title }}</span>
+        <span>{{title}}</span>
     </div>
     <div class="post_body">
-        <span>{{ body }}</span>
+        <span>{{body}}</span>
     </div>
     <div class="post_foot">
-        <span class="date_posted">Posted on {{ date_posted }}</span>
+        <span class="date_posted">Posted on {{date_posted}}</span>
     </div>
 </div>
-{{{ nonzero:posts.length }}}
+{{#has_posts}}
 <div id="posts">
-    {{{ each:posts }}}
+    {{#posts}}
     <div class="post">
         <div class="user_box">
-            <span class="username">{{ user.username }}</span>
+            <span class="username">{{user.username}}</span>
             <table class="user_data">
                 <tbody>
                     <tr>
                         <th>Member since</th>
-                        <td>{{ user.date_joined }}</td>
+                        <td>{{user.date_joined}}</td>
                     </tr>
                     <tr>
                         <th>Total posts</th>
-                        <td>{{ user.num_posts }}</td>
+                        <td>{{user.num_posts}}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div class="post_body">
-            <span>{{ body }}</span>
+            <span>{{body}}</span>
         </div>
         <div class="post_foot">
-            <span class="date_posted">Posted on {{ date_posted }}</span>
+            <span class="date_posted">Posted on {{date_posted}}</span>
         </div>
     </div>
-    {{{ /each:posts }}}
+    {{/posts}}
     <div>
         <ul id="pagelinks"></ul>
     </div>
 </div>
-{{{ /nonzero }}}
+{{/has_posts}}

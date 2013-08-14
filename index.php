@@ -57,6 +57,8 @@ Not logged in. Please login or register to participate.
         <script src="js/jquery.scrollpane.js"></script>
         <link href="css/jquery.scrollpane.css" rel="stylesheet" type="text/css" />
 
+        <script src="js/mustache.js" type="text/javascript"></script>
+
         <script src="js/ramble.login.js" type="text/javascript"></script>
         <script src="js/ramble.pages.js" type="text/javascript"></script>
         <script src="js/ramble.config.js" type="text/javascript"></script>

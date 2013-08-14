@@ -125,9 +125,11 @@ var Pages = {
                 for (i = 0; i < grp_ord.length; i++) {
                     fgrp = fgrps[grp_ord[i]];
                     fgrp.forums = [];
+                    fgrp.total_threads = 0;
                     ord = frm_ord[fgrp.id];
                     for (j = 0; j < ord.length; j++) {
                         forum = forums[ord[j]];
+                        fgrp.total_threads += forum.num_threads;
                         fgrp.forums.push(forum);
                     }
                     template_data.fg.push(fgrp);
@@ -390,7 +392,8 @@ var Pages = {
                 // apply template
                 template = new Template("thread");
                 html.html(template.apply($.extend(thread, {
-                    posts: data[1]
+                    posts: data[1],
+                    has_posts: (data[1].length > 0)
                 })));
                 // process bindings
                 $(".backlink a").on('click', null, thread.forum.id, function (e) {

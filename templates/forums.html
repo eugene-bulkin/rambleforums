@@ -1,7 +1,7 @@
-{{{ each:fg }}}
-<table class="list" id="fg{{ id }}" cellspacing="0">
+{{#fg}}
+<table class="list" id="fg{{id}}" cellspacing="0">
     <caption>
-        {{ name }}
+        {{name}}
     </caption>
     <thead>
         <tr>
@@ -17,32 +17,32 @@
         </tr>
     </thead>
     <tbody>
-        {{{ each:forums }}}
+        {{#forums}}
         <tr class="forum">
             <td>
                 <h1>
-                    <a class="forum_link" id="flid{{ id }}">{{ name }}</a>
+                    <a class="forum_link" id="flid{{id}}">{{name}}</a>
                 </h1><br>
-                {{ description }}
+                {{description}}
             </td>
             <td>
-                {{ num_threads }}
+                {{num_threads}}
             </td>
-            {{{ notnull:last_post }}}
-            <td>by <a>{{ last_post.user.username }}</a><br /><span class="date">{{ last_post.last_date_posted }}</span></td>
-            {{{ /notnull }}}
-            {{{ isnull:last_post }}}
+            {{#last_post}}
+            <td>by <a>{{user.username}}</a><br /><span class="date">{{last_date_posted}}</span></td>
+            {{/last_post}}
+            {{^last_post}}
             <td>No posts in this forum.</td>
-            {{{ /isnull }}}
+            {{/last_post}}
         </tr>
-        {{{ /each:forums }}}
+        {{/forums}}
     </tbody>
     <tfoot>
         <tr>
             <td colspan="3">
-                Total threads: {{{ sum:forums:num_threads }}}
+                Total threads: {{total_threads}}
             </td>
         </tr>
     </tfoot>
 </table>
-{{{ /each:fg }}}
+{{/fg}}
