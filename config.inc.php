@@ -20,17 +20,20 @@ $dba = (object) array (
 // ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 // DO NOT MODIFY BELOW THIS LINE !
 // ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
-class Config {
+class Config
+{
     private $db;
     private $ramble, $forum;
 
-    public function __construct( $dba ) {
+    public function __construct( $dba )
+    {
         $this->db = $dba;
         $this->ramble = new stdClass();
         $this->forum = new stdClass();
     }
 
-    public function get( $keyid ) {
+    public function get( $keyid )
+    {
         $keyids = explode( '.', $keyid );
         $key = $keyids[0];
         $subkey = $keyids[1];
@@ -38,7 +41,8 @@ class Config {
         return $this->{$key}->{$subkey};
     }
 
-    public function set( $key, $subkey, $value ) {
+    public function set( $key, $subkey, $value )
+    {
         $this->{$key}->{$subkey} = $value;
     }
 }
@@ -62,12 +66,11 @@ try {
     $STH = $DBH->prepare( "SELECT `key`, `subkey`, `value`, `type` FROM config" );
     $STH->execute();
     $RES = $STH->fetchAll( PDO::FETCH_OBJ );
-    foreach ( $RES as $row ) {
+    foreach ($RES as $row) {
         $val = ( $row->type == "json" ) ? json_decode( $row->value ) : $row->value;
         $_config->set( $row->key, $row->subkey, $val );
     }
-} catch( PDOException $e ) {
+} catch ( PDOException $e ) {
     echo $e->getMessage();
     exit;
 }
-?>

@@ -8,13 +8,15 @@ if ( !array_key_exists( "options", $_GET ) ) {
 
 $options = json_decode( $_GET['options'] );
 
-class RambleDB {
+class RambleDB
+{
     private $special_keys;
     private $DBH;
     private $CONF;
     private $tables;
 
-    public function __construct( $DBH, $CONF ) {
+    public function __construct( $DBH, $CONF )
+    {
         $this->DBH = $DBH;
         $this->CONF = $CONF;
         $this->special_keys = array (
@@ -43,21 +45,25 @@ class RambleDB {
         );
     }
 
-    private function process_type( $key, $value ) {
+    private function process_type( $key, $value )
+    {
         if ( in_array( $key, $this->key_types["numbers"] ) ) {
             return intval( $value );
         }
         if ( in_array( $key, $this->key_types["dates"] ) ) {
             return date_format( date_create_from_format( "Y-m-d H:i:s", $value ), "F d, Y h:i:s A" );
         }
+
         return $value;
     }
 
-    private function to_singular( $table ) {
+    private function to_singular( $table )
+    {
         return substr( $table, 0, -1 );
     }
 
-    private function key_to_sql( $table, $key ) {
+    private function key_to_sql( $table, $key )
+    {
         if ( array_key_exists( $key, $this->special_keys[$table] ) ) {
             return sprintf( "(%s) AS `%s.%s`", $this->special_keys[$table][$key], $table, $key );
         } else {
@@ -66,24 +72,24 @@ class RambleDB {
     }
 
     // construct a query given some options
-    public function construct( $options ) {
-
+    public function construct( $options )
+    {
         $result = "";
 
         if ( !in_array( $options->query, $this->tables ) ) {
             die( "NULL" );
         }
         $selects = array();
-        foreach ( $options->keys as $key ) {
+        foreach ($options->keys as $key) {
             $selects[] = $this->key_to_sql( $options->query, $key );
         }
         $joins = array();
-        foreach ( $options->each as $table => $keys ) {
-            if ( $table === "last_post" ) {// skip because processed separately
+        foreach ($options->each as $table => $keys) {
+            if ($table === "last_post") {// skip because processed separately
                 continue;
             }
             $joins[] = sprintf( "INNER JOIN %s ON %s.id=%s.%s_id", $table, $table, $options->query, $this->to_singular( $table ) );
-            foreach ( $keys as $key ) {
+            foreach ($keys as $key) {
                 $selects[] = $this->key_to_sql( $table, $key );
             }
         }
@@ -96,10 +102,10 @@ class RambleDB {
             }
             $result .= sprintf( " WHERE %s%s=?", $wheretable, $options->where[0] );
         }
-        if ( $options->type === "list" ) {
+        if ($options->type === "list") {
             if ( array_key_exists( "order", $options ) ) {
                 $result .= sprintf( " ORDER BY %s %s", $options->order[0], $options->order[1] );
-                if ( $options->paginate ) {
+                if ($options->paginate) {
                     $page = $options->paginate[0];
                     $pp = $options->paginate[1];
 
@@ -114,14 +120,15 @@ class RambleDB {
     }
 
     // perform query
-    public function query( $queries ) {
+    public function query( $queries )
+    {
         $results = array();
-        foreach ( $queries as $options ) {
+        foreach ($queries as $options) {
             $result = null;
 
-            if ( $options->query === "config" ) {
+            if ($options->query === "config") {
                 $result = array();
-                foreach ( $options->keys as $key ) {
+                foreach ($options->keys as $key) {
                     $result[explode( ".", $key )[1]] = $this->CONF->get( $key );
                 }
                 $results[] = $result;
@@ -140,39 +147,38 @@ class RambleDB {
             }
             try {
                 $STH->execute( $data );
-            } catch( PDOException $e ) {
+            } catch ( PDOException $e ) {
                 echo $e->getMessage();
                 echo "\nThe query was: '$sqlquery'";
                 die();
             }
 
-            if ( $options->type === "indiv" ) {
+            if ($options->type === "indiv") {
                 $RES = $STH->fetch( PDO::FETCH_OBJ );
-                if ( $RES->{$options->query . ".id"} !== null ) {
-                    foreach ( $RES as $fullkey => $value ) {
+                if ($RES->{$options->query . ".id"} !== null) {
+                    foreach ($RES as $fullkey => $value) {
                         $keyexp = explode( ".", $fullkey );
                         $table = $keyexp[0];
                         $key = $keyexp[1];
-                        if ( $table === $options->query ) {
+                        if ($table === $options->query) {
                             $result[$key] = $this->process_type( $key, $value );
                         } else {
                             $result[$this->to_singular( $table )][$key] = $this->process_type( $key, $value );
                         }
                     }
                 }
-            }
-            elseif ( $options->type === "list" ) {
+            } elseif ($options->type === "list") {
                 $RES = $STH->fetchAll( PDO::FETCH_OBJ );
 
                 $result = array();
 
-                foreach ( $RES as $row ) {
+                foreach ($RES as $row) {
                     $row_result = array();
-                    foreach ( $row as $fullkey => $value ) {
+                    foreach ($row as $fullkey => $value) {
                         $keyexp = explode( ".", $fullkey );
                         $table = $keyexp[0];
                         $key = $keyexp[1];
-                        if ( $table === $options->query ) {
+                        if ($table === $options->query) {
                             $row_result[$key] = $this->process_type( $key, $value );
                         } else {
                             $row_result[$this->to_singular( $table )][$key] = $this->process_type( $key, $value );
@@ -187,11 +193,11 @@ class RambleDB {
                         $opts->query = "posts";
                         $opts->keys = [ "id", "last_date_posted" ]; // last_date_posted must be in there or it won't find the last post
                         $opts->each = array( "users" => [ "id", "username"] );
-                        if ( $options->query === "threads" ) {
+                        if ($options->query === "threads") {
                             $opts->where = [ "thread_id", $row_result["id"] ];
                             $lastpost = $this->query( array( $opts ) )[0];
                             $row_result["last_post"] = $lastpost;
-                        } elseif ( $options->query === "forums" ) {
+                        } elseif ($options->query === "forums") {
                             $opts->where = [ "threads.forum_id", $row_result["id"] ];
                             $opts->each["threads"] = array();
                             $lastpost = $this->query( array( $opts ) )[0];
@@ -212,4 +218,3 @@ class RambleDB {
 $SQL = new RambleDB( $DBH, $_config );
 
 echo json_encode( $SQL->query( $options ) );
-?>
