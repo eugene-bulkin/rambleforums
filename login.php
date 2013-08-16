@@ -2,7 +2,8 @@
 require 'config.inc.php';
 session_start();
 
-function process_error( $e ) {
+function process_error( $e )
+{
     $error_msg = "";
     switch ( $e->getCode() ) {
     case "42000":
@@ -21,7 +22,8 @@ function process_error( $e ) {
 $mode = array_key_exists( 'mode', $_GET ) ? $_GET['mode'] : null;
 
 // Processing a registration
-function process_registration( $DBH ) {
+function process_registration( $DBH )
+{
     /* Generate strong hash.
      * See http://alias.io/2010/01/store-passwords-safely-with-php-and-mysql/
      */
@@ -66,7 +68,8 @@ function process_registration( $DBH ) {
 }
 
 // Process login
-function process_login( $DBH ) {
+function process_login( $DBH )
+{
     try {
         // get user's hash
         $STH = $DBH->prepare( "SELECT id, hash FROM users WHERE username = ? LIMIT 1" );
@@ -97,7 +100,7 @@ function process_login( $DBH ) {
 }
 
 $result = null;
-switch ( $mode ) {
+switch ($mode) {
 case "register":
     $result = process_registration( $DBH );
     break;
@@ -112,4 +115,3 @@ default:
     break;
 }
 print json_encode( $result );
-?>
