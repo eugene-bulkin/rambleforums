@@ -216,6 +216,48 @@ var Pages = {
                 });
 
                 Pages.page_links(opts.page, forum.pages, "forum", opts.forum_id);
+
+                $("#new_thread").bind('click', function () {
+                    $("#page").append('<div id="dialog">');
+                    var thread_template = new Template("new_thread");
+                    $("#dialog").html(thread_template.apply({
+                        forum: data[0]
+                    }))
+                        .dialog({
+                        autoOpen: false,
+                        modal: true,
+                        draggable: false,
+                        width: 700,
+                        height: 575,
+                        title: "New Thread",
+                        buttons: {
+                            "Submit": function () {
+                                var form = $(this).children('form');
+                                form.ajaxSubmit({
+                                    dataType: "json",
+                                    type: "POST",
+                                    url: "post.php?mode=new_thread",
+                                    success: function (data) {
+                                        if(data.success === true) {
+                                            $('#dialog').dialog("close");
+
+                                            Pages.load("thread", "#page", {
+                                                page: 1,
+                                                thread_id: data.thread_id
+                                            });
+                                        } else {
+                                            console.log(data);
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                        close: function (e, ui) {
+                            "use strict";
+                            $("#dialog").dialog("destroy").remove();
+                        }
+                    }).dialog("open");
+                });
             }
         });
 
