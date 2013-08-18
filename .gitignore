@@ -1,6 +1,9 @@
 test.html
 *.phptidy*
 
+# PHPStorm
+.idea
+
 # SASS files
 .sass-cache
 
