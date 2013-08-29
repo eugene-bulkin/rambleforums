@@ -369,7 +369,7 @@ var Pages = {
                 "users": ["id", "username", "date_joined", "num_posts"]
             },
             where: ["thread_id", opts.thread_id],
-            order: ["date_posted", "DESC"],
+            order: ["date_posted", "ASC"],
             paginate: [opts.page, opts.pp]
         };
         $.ajax({
