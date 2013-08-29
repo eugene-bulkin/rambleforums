@@ -1,32 +1,35 @@
-/*jslint browser: true, devel: true, plusplus: true, indent: 4, unparam: true */
-/*globals $: false, Pages: false, Config: false, Login: false */
-var Template = function (template) {
+RAMBLE.Template = (function ($) {
     "use strict";
-    this.template = template;
-    this.template_data = null;
+    var module = {};
 
-    if(Template.cache[this.template] !== undefined) {
-        // template already loaded this session, so load from cache
-        this.template_data = Template.cache[this.template];
-    } else {
-        $.ajax({
-            url: "templates/" + this.template + ".html",
-            dataType: "html",
-            cache: false,
-            async: false, // do not allow anything else to happen until template is loaded!
-            success: function (data) {
-                this.template_data = data;
-                Template.cache[this.template] = data;
-            }.bind(this)
-        });
-    }
+    module.Template = function (template) {
+        this.template = template;
+        this.template_data = null;
 
-    return this;
-};
+        if (RAMBLE.Template.cache[this.template] !== undefined) {
+            // template already loaded this session, so load from cache
+            this.template_data = RAMBLE.Template.cache[this.template];
+        } else {
+            $.ajax({
+                url: "templates/" + this.template + ".html",
+                dataType: "html",
+                cache: false,
+                async: false, // do not allow anything else to happen until template is loaded!
+                success: function (data) {
+                    this.template_data = data;
+                    RAMBLE.Template.cache[this.template] = data;
+                }.bind(this)
+            });
+        }
 
-Template.cache = {};
+        return this;
+    };
 
-Template.prototype.apply = function (data) {
-    "use strict";
-    return Mustache.render(this.template_data, data);
-};
+    module.Template.prototype.apply = function (data) {
+        return Mustache.render(this.template_data, data);
+    };
+
+    module.cache = {};
+
+    return module;
+}(jQuery));

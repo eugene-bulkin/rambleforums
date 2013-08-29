@@ -1,8 +1,8 @@
-/*jslint browser: true, devel: true, plusplus: true, indent: 4, unparam: true */
-/*globals $: false, Pages: false, Config: false, Login: false */
-var Config = {
-    processGroupOrder: function () {
-        "use strict";
+RAMBLE.Config = (function ($) {
+    "use strict";
+    var module = {};
+
+    module.processGroupOrder = function () {
         // disable sorting while we process
         $("#forum_groups").sortable('disable');
         $(".forumSortable").sortable('disable');
@@ -28,9 +28,9 @@ var Config = {
                 }
             }
         });
-    },
-    processForumOrder: function () {
-        "use strict";
+    };
+
+    module.processForumOrder = function () {
         // disable sorting while we process
         $("#forum_groups").sortable('disable');
         $(".forumSortable").sortable('disable');
@@ -61,5 +61,7 @@ var Config = {
                 }
             }
         });
-    }
-};
+    };
+
+    return module;
+}(jQuery));

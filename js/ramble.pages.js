@@ -1,8 +1,8 @@
-/*jslint browser: true, devel: true, plusplus: true, indent: 4, unparam: true */
-/*globals $: false, Pages: false, Config: false, Login: false, Template: false */
-var Pages = {
-    page_links: function (cur_page, num_pages, mode, id) {
-        "use strict";
+RAMBLE.Pages = (function ($) {
+    "use strict";
+    var module = {};
+
+    function page_links(cur_page, num_pages, mode, id) {
         var pagearr, temparr, i,
             li, linktext, pagelink,
             pageBinding;
@@ -19,7 +19,7 @@ var Pages = {
         if (num_pages <= 3) {
             pagearr = [1];
             pagearr.push(1);
-            for (i = 2; i <= num_pages; i++) {
+            for (i = 2; i <= num_pages; i += 1) {
                 pagearr.push(i);
             }
             pagearr.push(num_pages);
@@ -43,14 +43,14 @@ var Pages = {
                 pagelink = $('<a id="page' + this + '">' + linktext + '</a>');
                 if (mode === "forum") {
                     pageBinding = function (e) {
-                        Pages.load("threads", "#page", {
+                        RAMBLE.Pages.load("threads", "#page", {
                             page: e.data[0],
                             forum_id: e.data[1]
                         });
                     };
                 } else {
                     pageBinding = function (e) {
-                        Pages.load("thread", "#page", {
+                        RAMBLE.Pages.load("thread", "#page", {
                             page: e.data[0],
                             thread_id: e.data[1]
                         });
@@ -63,9 +63,9 @@ var Pages = {
             li.append(pagelink);
             $('#pagelinks').append(li);
         });
-    },
-    forums: function () {
-        "use strict";
+    }
+
+    function forums() {
         var html = $('<div id="forums"></div>'),
             sql = [];
         // get group and forum orders
@@ -118,16 +118,16 @@ var Pages = {
                 // remove loading gif
                 html.html('');
                 html.attr('style', null);
-                template = new Template("forums");
+                template = new RAMBLE.Template.Template("forums");
                 template_data = {
                     fg: []
                 };
-                for (i = 0; i < grp_ord.length; i++) {
+                for (i = 0; i < grp_ord.length; i += 1) {
                     fgrp = fgrps[grp_ord[i]];
                     fgrp.forums = [];
                     fgrp.total_threads = 0;
                     ord = frm_ord[fgrp.id];
-                    for (j = 0; j < ord.length; j++) {
+                    for (j = 0; j < ord.length; j += 1) {
                         forum = forums[ord[j]];
                         fgrp.total_threads += forum.num_threads;
                         fgrp.forums.push(forum);
@@ -137,7 +137,7 @@ var Pages = {
                 html.html(template.apply(template_data));
                 // process bindings
                 $('.forum_link').on('click', function () {
-                    Pages.load("threads", "#page", {
+                    RAMBLE.Pages.load("threads", "#page", {
                         forum_id: this.id.replace("flid", "")
                     });
                 });
@@ -145,10 +145,9 @@ var Pages = {
         });
 
         return html;
-    },
+    }
 
-    threads: function (options) {
-        "use strict";
+    function threads(options) {
         var html = $('<div id="threads"></div>'),
             defaults = {
                 page: 1,
@@ -198,7 +197,7 @@ var Pages = {
                 html.html('');
                 html.attr('style', null);
                 // apply template
-                template = new Template("thread_list");
+                template = new RAMBLE.Template.Template("thread_list");
                 html.html(template.apply({
                     forum: data[0],
                     threads: data[1]
@@ -206,66 +205,172 @@ var Pages = {
 
                 // process bindings
                 $('.backlink a').on('click', function () {
-                    Pages.load("forums", "#page");
+                    RAMBLE.Pages.load("forums", "#page");
                 });
 
                 $('.thread_link').on('click', function () {
-                    Pages.load("thread", "#page", {
+                    RAMBLE.Pages.load("thread", "#page", {
                         thread_id: this.id.replace("tlid", "")
                     });
                 });
 
-                Pages.page_links(opts.page, forum.pages, "forum", opts.forum_id);
+                page_links(opts.page, forum.pages, "forum", opts.forum_id);
 
                 $("#new_thread").bind('click', function () {
                     $("#page").append('<div id="dialog">');
-                    var thread_template = new Template("new_thread");
-                    $("#dialog").html(thread_template.apply({
-                        forum: data[0]
-                    }))
+                    var thread_template = new RAMBLE.Template.Template("new_thread");
+                    $("#dialog").html(thread_template.apply({ forum: data[0] }))
                         .dialog({
-                        autoOpen: false,
-                        modal: true,
-                        draggable: false,
-                        width: 700,
-                        height: 575,
-                        title: "New Thread",
-                        buttons: {
-                            "Submit": function () {
-                                var form = $(this).children('form');
-                                form.ajaxSubmit({
-                                    dataType: "json",
-                                    type: "POST",
-                                    url: "post.php?mode=new_thread",
-                                    success: function (data) {
-                                        if(data.success === true) {
-                                            $('#dialog').dialog("close");
+                            autoOpen: false,
+                            modal: true,
+                            draggable: false,
+                            width: 700,
+                            height: 575,
+                            title: "New Thread",
+                            buttons: {
+                                "Submit": function () {
+                                    var form = $(this).children('form');
+                                    form.ajaxSubmit({
+                                        dataType: "json",
+                                        type: "POST",
+                                        url: "post.php?mode=new_thread",
+                                        success: function (data) {
+                                            if (data.success === true) {
+                                                $('#dialog').dialog("close");
 
-                                            Pages.load("thread", "#page", {
-                                                page: 1,
-                                                thread_id: data.thread_id
-                                            });
-                                        } else {
-                                            console.log(data);
+                                                RAMBLE.Pages.load("thread", "#page", {
+                                                    page: 1,
+                                                    thread_id: data.thread_id
+                                                });
+                                            } else {
+                                                console.log(data);
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                }
+                            },
+                            close: function () {
+                                $("#dialog").dialog("destroy").remove();
                             }
-                        },
-                        close: function (e, ui) {
-                            "use strict";
-                            $("#dialog").dialog("destroy").remove();
-                        }
-                    }).dialog("open");
+                        }).dialog("open");
                 });
             }
         });
 
         return html;
-    },
+    }
 
-    group_order: function () {
-        "use strict";
+    function thread(options) {
+        var html = $('<div id="thread"></div>'),
+            defaults = {
+                page: 1,
+                pp: 5,
+                thread_id: 1
+            },
+            opts = $.extend(defaults, options),
+            sql = [];
+        // get info about the thread itself
+        sql[0] = {
+            type: "indiv",
+            query: "threads",
+            keys: ["id", "title", "body", "date_posted", "pages"],
+            each: {
+                "users": ["id", "username", "date_joined", "num_posts"],
+                "forums": ["id", "name"]
+            },
+            where: ["id", opts.thread_id],
+            order: false,
+            paginate: [opts.page, opts.pp]
+        };
+        // actual post list sql
+        sql[1] = {
+            type: "list",
+            query: "posts",
+            keys: ["id", "body", "date_posted"],
+            each: {
+                "users": ["id", "username", "date_joined", "num_posts"]
+            },
+            where: ["thread_id", opts.thread_id],
+            order: ["date_posted", "ASC"],
+            paginate: [opts.page, opts.pp]
+        };
+        $.ajax({
+            url: "db.php",
+            data: {
+                options: JSON.stringify(sql)
+            },
+            dataType: "json",
+            beforeSend: function () {
+                // add loading gif
+                html.css('text-align', 'center');
+                html.html('<img src="images/loading.gif" />');
+            },
+            success: function (data) {
+                var template,
+                    thread = data[0];
+                // remove loading gif
+                html.html('');
+                html.attr('style', null);
+                // apply template
+                template = new RAMBLE.Template.Template("thread");
+                html.html(template.apply($.extend(thread, {
+                    posts: data[1],
+                    has_posts: (data[1].length > 0)
+                })));
+                // process bindings
+                $(".backlink a").on('click', null, thread.forum.id, function (e) {
+                    RAMBLE.Pages.load("threads", "#page", {
+                        forum_id: e.data
+                    });
+                });
+
+                page_links(opts.page, thread.pages, "thread", opts.thread_id);
+
+                $("#new_reply").bind('click', function () {
+                    $("#page").append('<div id="dialog">');
+                    var reply_template = new RAMBLE.Template.Template("new_reply");
+                    $("#dialog").html(reply_template.apply({ thread: data[0] }))
+                        .dialog({
+                            autoOpen: false,
+                            modal: true,
+                            draggable: false,
+                            width: 700,
+                            height: 575,
+                            title: "New Reply",
+                            buttons: {
+                                "Submit": function () {
+                                    var form = $(this).children('form');
+                                    form.ajaxSubmit({
+                                        dataType: "json",
+                                        type: "POST",
+                                        url: "post.php?mode=new_reply",
+                                        success: function (data) {
+                                            if (data.success === true) {
+                                                $('#dialog').dialog("close");
+
+                                                RAMBLE.Pages.load("thread", "#page", {
+                                                    page: 1,
+                                                    thread_id: data.thread_id
+                                                });
+                                            } else {
+                                                console.log(data);
+                                            }
+                                        }
+                                    });
+                                }
+                            },
+                            close: function () {
+                                $("#dialog").dialog("destroy").remove();
+                            }
+                        }).dialog("open");
+                });
+            }
+        });
+
+        return html;
+    }
+
+    function group_order() {
         var html = $('<div id="group_order"></div>'),
             sql = [];
         // get group and forum orders
@@ -328,14 +433,14 @@ var Pages = {
                 html.html('');
                 html.attr('style', null);
                 // process forum groups
-                for (i = 0; i < grp_ord.length; i++) {
+                for (i = 0; i < grp_ord.length; i += 1) {
                     fgrp = fgrps[grp_ord[i]];
                     ord = frm_ord[fgrp.id];
                     div = $('<div class="fgroup">');
                     ful = $('<ul class="forumSortable">');
                     div.attr('id', 'fg' + fgrp.id);
                     div.append('<div class="fgname"><span>' + fgrp.name + '</span></div>');
-                    for (j = 0; j < ord.length; j++) {
+                    for (j = 0; j < ord.length; j += 1) {
                         forum = forums[ord[j]];
                         li = $('<li>');
                         li.addClass("ui-button ui-widget ui-state-default ui-button-text-only");
@@ -349,7 +454,7 @@ var Pages = {
 
                 // add sortability
                 fghtml.sortable({
-                    update: Config.processGroupOrder,
+                    update: RAMBLE.Config.processGroupOrder,
                     axis: 'x',
                     cursor: 'move',
                     distance: 50,
@@ -364,7 +469,7 @@ var Pages = {
                 $(".forumSortable")
                     .sortable({
                         connectWith: ".forumSortable",
-                        update: Config.processForumOrder,
+                        update: RAMBLE.Config.processForumOrder,
                         cursor: 'move',
                         distance: 15,
                         opacity: 0.9,
@@ -377,125 +482,16 @@ var Pages = {
         });
 
         return html;
-    },
+    }
 
-    thread: function (options) {
-        "use strict";
-        var html = $('<div id="thread"></div>'),
-            defaults = {
-                page: 1,
-                pp: 5,
-                thread_id: 1
-            },
-            opts = $.extend(defaults, options),
-            sql = [];
-        // get info about the thread itself
-        sql[0] = {
-            type: "indiv",
-            query: "threads",
-            keys: ["id", "title", "body", "date_posted", "pages"],
-            each: {
-                "users": ["id", "username", "date_joined", "num_posts"],
-                "forums": ["id", "name"]
-            },
-            where: ["id", opts.thread_id],
-            order: false,
-            paginate: [opts.page, opts.pp]
-        };
-        // actual post list sql
-        sql[1] = {
-            type: "list",
-            query: "posts",
-            keys: ["id", "body", "date_posted"],
-            each: {
-                "users": ["id", "username", "date_joined", "num_posts"]
-            },
-            where: ["thread_id", opts.thread_id],
-            order: ["date_posted", "ASC"],
-            paginate: [opts.page, opts.pp]
-        };
-        $.ajax({
-            url: "db.php",
-            data: {
-                options: JSON.stringify(sql)
-            },
-            dataType: "json",
-            beforeSend: function () {
-                // add loading gif
-                html.css('text-align', 'center');
-                html.html('<img src="images/loading.gif" />');
-            },
-            success: function (data) {
-                var template,
-                    thread = data[0];
-                // remove loading gif
-                html.html('');
-                html.attr('style', null);
-                // apply template
-                template = new Template("thread");
-                html.html(template.apply($.extend(thread, {
-                    posts: data[1],
-                    has_posts: (data[1].length > 0)
-                })));
-                // process bindings
-                $(".backlink a").on('click', null, thread.forum.id, function (e) {
-                    Pages.load("threads", "#page", {
-                        forum_id: e.data
-                    });
-                });
+    function processHistory(event) {
+        var s = event.originalEvent.state;
+        if (s) {
+            RAMBLE.Pages.load(s.mode, s.element, s.options, false, true);
+        }
+    }
 
-                Pages.page_links(opts.page, thread.pages, "thread", opts.thread_id);
-
-                $("#new_reply").bind('click', function () {
-                    $("#page").append('<div id="dialog">');
-                    var reply_template = new Template("new_reply");
-                    $("#dialog").html(reply_template.apply({
-                            thread: data[0]
-                        }))
-                        .dialog({
-                            autoOpen: false,
-                            modal: true,
-                            draggable: false,
-                            width: 700,
-                            height: 575,
-                            title: "New Reply",
-                            buttons: {
-                                "Submit": function () {
-                                    var form = $(this).children('form');
-                                    form.ajaxSubmit({
-                                        dataType: "json",
-                                        type: "POST",
-                                        url: "post.php?mode=new_reply",
-                                        success: function (data) {
-                                            if(data.success === true) {
-                                                $('#dialog').dialog("close");
-
-                                                Pages.load("thread", "#page", {
-                                                    page: 1,
-                                                    thread_id: data.thread_id
-                                                });
-                                            } else {
-                                                console.log(data);
-                                            }
-                                        }
-                                    });
-                                }
-                            },
-                            close: function (e, ui) {
-                                "use strict";
-                                $("#dialog").dialog("destroy").remove();
-                            }
-                        }).dialog("open");
-                });
-            }
-        });
-
-        return html;
-    },
-
-    load: function (mode, element, options, firstLoad, noHistory) {
-        "use strict";
-
+    module.load = function (mode, element, options, firstLoad, noHistory) {
         firstLoad = firstLoad || false;
         noHistory = noHistory || false;
 
@@ -508,16 +504,16 @@ var Pages = {
 
         switch (mode) {
         case "forums":
-            $(element).html(Pages.forums());
+            $(element).html(forums());
             break;
         case "threads":
-            $(element).html(Pages.threads(options));
+            $(element).html(threads(options));
             break;
         case "thread":
-            $(element).html(Pages.thread(options));
+            $(element).html(thread(options));
             break;
         case "group_order":
-            $(element).html(Pages.group_order());
+            $(element).html(group_order());
             break;
         default:
             break;
@@ -530,16 +526,10 @@ var Pages = {
             } else {
                 history.replaceState(state);
 
-                $(window).on('popstate', Pages.processHistory);
+                $(window).on('popstate', processHistory);
             }
         }
-    },
+    };
 
-    processHistory: function (event) {
-        "use strict";
-        var s = event.originalEvent.state;
-        if (s) {
-            Pages.load(s.mode, s.element, s.options, false, true);
-        }
-    }
-};
+    return module;
+}(jQuery));
