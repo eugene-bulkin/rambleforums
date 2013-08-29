@@ -445,6 +445,48 @@ var Pages = {
                 });
 
                 Pages.page_links(opts.page, thread.pages, "thread", opts.thread_id);
+
+                $("#new_reply").bind('click', function () {
+                    $("#page").append('<div id="dialog">');
+                    var reply_template = new Template("new_reply");
+                    $("#dialog").html(reply_template.apply({
+                            thread: data[0]
+                        }))
+                        .dialog({
+                            autoOpen: false,
+                            modal: true,
+                            draggable: false,
+                            width: 700,
+                            height: 575,
+                            title: "New Reply",
+                            buttons: {
+                                "Submit": function () {
+                                    var form = $(this).children('form');
+                                    form.ajaxSubmit({
+                                        dataType: "json",
+                                        type: "POST",
+                                        url: "post.php?mode=new_reply",
+                                        success: function (data) {
+                                            if(data.success === true) {
+                                                $('#dialog').dialog("close");
+
+                                                Pages.load("thread", "#page", {
+                                                    page: 1,
+                                                    thread_id: data.thread_id
+                                                });
+                                            } else {
+                                                console.log(data);
+                                            }
+                                        }
+                                    });
+                                }
+                            },
+                            close: function (e, ui) {
+                                "use strict";
+                                $("#dialog").dialog("destroy").remove();
+                            }
+                        }).dialog("open");
+                });
             }
         });
 
