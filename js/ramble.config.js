@@ -9,7 +9,7 @@ RAMBLE.Config = (function ($) {
         $("#loading").html('<br /><img src="images/loading.gif" />');
         // process data
         var grp_ord = [];
-        $("#forum_groups div.fgroup").each(function (i, el) {
+        $("#forum_groups").find("div.fgroup").each(function (i, el) {
             grp_ord.push($(el).attr('id').replace('fg', ''));
         });
         $.ajax({
@@ -37,7 +37,7 @@ RAMBLE.Config = (function ($) {
         $("#loading").html('<br /><img src="images/loading.gif" />');
         // process data
         var forum_ord = {};
-        $("#forum_groups div.fgroup").each(function (i, el) {
+        $("#forum_groups").find("div.fgroup").each(function (i, el) {
             var fgid = $(el).attr('id').replace('fg', '');
             forum_ord[fgid] = [];
             $(this).find('li').each(function (i, el) {

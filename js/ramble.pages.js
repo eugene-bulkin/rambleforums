@@ -477,7 +477,7 @@ RAMBLE.Pages = (function ($) {
                     })
                     .disableSelection();
 
-                html.append('<center id="loading"></center>');
+                html.append('<div id="loading" style="text-align: center"></div>');
             }
         });
 

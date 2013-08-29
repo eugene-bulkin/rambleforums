@@ -4,45 +4,45 @@
         {{name}}
     </caption>
     <thead>
-        <tr>
-            <th>
-                Forum
-            </th>
-            <th>
-                Threads
-            </th>
-            <th>
-                Last Post
-            </th>
-        </tr>
+    <tr>
+        <th>
+            Forum
+        </th>
+        <th>
+            Threads
+        </th>
+        <th>
+            Last Post
+        </th>
+    </tr>
     </thead>
     <tbody>
-        {{#forums}}
-        <tr class="forum">
-            <td>
-                <h1>
-                    <a class="forum_link" id="flid{{id}}">{{name}}</a>
-                </h1><br>
-                {{description}}
-            </td>
-            <td>
-                {{num_threads}}
-            </td>
-            {{#last_post}}
-            <td>by <a>{{user.username}}</a><br /><span class="date">{{last_date_posted}}</span></td>
-            {{/last_post}}
-            {{^last_post}}
-            <td>No posts in this forum.</td>
-            {{/last_post}}
-        </tr>
-        {{/forums}}
+    {{#forums}}
+    <tr class="forum">
+        <td>
+            <h1>
+                <a class="forum_link" id="flid{{id}}">{{name}}</a>
+            </h1><br>
+            {{description}}
+        </td>
+        <td>
+            {{num_threads}}
+        </td>
+        {{#last_post}}
+        <td>by <a>{{user.username}}</a><br/><span class="date">{{last_date_posted}}</span></td>
+        {{/last_post}}
+        {{^last_post}}
+        <td>No posts in this forum.</td>
+        {{/last_post}}
+    </tr>
+    {{/forums}}
     </tbody>
     <tfoot>
-        <tr>
-            <td colspan="3">
-                Total threads: {{total_threads}}
-            </td>
-        </tr>
+    <tr>
+        <td colspan="3">
+            Total threads: {{total_threads}}
+        </td>
+    </tr>
     </tfoot>
 </table>
 {{/fg}}

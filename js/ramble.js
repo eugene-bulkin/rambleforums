@@ -5,7 +5,7 @@ var RAMBLE = (function ($) {
     function init() {
         RAMBLE.Login.init();
 
-        $('#title a').on('click', function () {
+        $('#title').find('a').on('click', function () {
             RAMBLE.Pages.load("forums", "#page");
         });
 

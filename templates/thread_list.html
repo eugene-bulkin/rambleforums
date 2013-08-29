@@ -6,36 +6,38 @@
         {{forum.name}}
     </caption>
     <thead>
-        <tr>
-            <th>Thread</th>
-            <th>Author</th>
-            <th>Replies</th>
-            <th>Last Post</th>
-        </tr>
+    <tr>
+        <th>Thread</th>
+        <th>Author</th>
+        <th>Replies</th>
+        <th>Last Post</th>
+    </tr>
     </thead>
     <tbody>
-        {{#threads}}
-        <tr class="thread">
-            <td><a class="thread_link" id="tlid{{id}}">{{title}}</a></td>
-            <td><a>{{user.username}}</a></td>
-            <td>{{num_replies}}</td>
-            {{#last_post}}
-            <td>by <a>{{last_post.user.username}}</a><br /><span class="date">{{last_post.last_date_posted}}</span></td>
-            {{/last_post}}
-            {{^last_post}}
-            <td>by <a>{{user.username}}</a><br /><span class="date">{{date_posted}}</span></td>
-            {{/last_post}}
-        </tr>
-        {{/threads}}
+    {{#threads}}
+    <tr class="thread">
+        <td><a class="thread_link" id="tlid{{id}}">{{title}}</a></td>
+        <td><a>{{user.username}}</a></td>
+        <td>{{num_replies}}</td>
+        {{#last_post}}
+        <td>by <a>{{last_post.user.username}}</a><br/><span class="date">{{last_post.last_date_posted}}</span></td>
+        {{/last_post}}
+        {{^last_post}}
+        <td>by <a>{{user.username}}</a><br/><span class="date">{{date_posted}}</span></td>
+        {{/last_post}}
+    </tr>
+    {{/threads}}
     </tbody>
     <tfoot>
-        <tr>
-            <td colspan="4">
-                <ul id="pagelinks"></ul>
-            </td>
-        </tr>
+    <tr>
+        <td colspan="4">
+            <ul id="pagelinks"></ul>
+        </td>
+    </tr>
     </tfoot>
 </table>
 <div id="forum_buttons">
-    <button id="new_thread" class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-all">Post New Thread</button>
+    <button id="new_thread" class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-all">Post New
+        Thread
+    </button>
 </div>
