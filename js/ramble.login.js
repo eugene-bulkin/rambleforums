@@ -19,6 +19,7 @@ RAMBLE.Login = (function ($) {
         // successful login
         if (data === true) {
             $('#dialog').dialog("close");
+            location.reload();
         } else {
             console.log(data);
         }
