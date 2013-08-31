@@ -22,7 +22,8 @@ class RambleDB
         $this->special_keys = array(
             "threads" => array(
                 "num_replies" => "SELECT COUNT(*) FROM posts WHERE posts.thread_id = threads.id",
-                "pages" => "SELECT CEIL(COUNT(*) / ?) FROM posts WHERE posts.thread_id = threads.id"
+                "pages" => "SELECT CEIL(COUNT(*) / ?) FROM posts WHERE posts.thread_id = threads.id",
+                "last_date_posted" => "MAX(threads.date_posted)"
             ),
             "posts" => array(
                 "last_date_posted" => "MAX(posts.date_posted)"
@@ -200,9 +201,39 @@ class RambleDB
                         } elseif ($options->query === "forums") {
                             $opts->where = array("threads.forum_id", $row_result["id"]);
                             $opts->each["threads"] = array();
-                            $q = $this->query(array($opts));
-                            $lastpost = $q[0];
-                            $row_result["last_post"] = $lastpost;
+                            $lastpost = $this->query( array( $opts ) )[0];
+                            $lpdate = DateTime::createFromFormat("F d, Y h:i:s A", $lastpost["last_date_posted"]);
+                            // also find last thread
+                            $opts = new stdClass();
+                            $opts->type = "indiv";
+                            $opts->query = "threads";
+                            $opts->keys = array("id", "last_date_posted");
+                            $opts->each = array( "users" => array("id", "username") );
+                            $opts->where = array("forum_id", $row_result["id"]);
+                            $q = $this->query( array( $opts ) );
+                            $lastthread = $q[0];
+                            $ltdate = DateTime::createFromFormat("F d, Y h:i:s A", $lastthread["last_date_posted"]);
+                            // check if both dates are available
+                            if($ltdate && $lpdate) {
+                                if ($ltdate > $lpdate) {
+                                    $row_result["last_post"] = $lastthread;
+                                    $row_result["last_post"]["last_type"] = "thread";
+                                } else {
+                                    $row_result["last_post"] = $lastpost;
+                                    $row_result["last_post"]["last_type"] = "post";
+                                }
+                            } else {
+                                // otherwise return the one that exists
+                                if($ltdate) {
+                                    $row_result["last_post"] = $lastthread;
+                                    $row_result["last_post"]["last_type"] = "thread";
+                                } elseif($lpdate) {
+                                    $row_result["last_post"] = $lastpost;
+                                    $row_result["last_post"]["last_type"] = "post";
+                                } else {
+                                    $row_result["last_post"] = null;
+                                }
+                            }
                         }
                     }
 
