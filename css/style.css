@@ -405,7 +405,8 @@ div.post_foot {
 /* User Page display */
 #userpage {
     width: 60%;
-    margin: 0 auto; }
+    margin: 0 auto;
+    padding: 1%; }
 
 #user_body {
     width: 100%;
