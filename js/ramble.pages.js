@@ -377,6 +377,39 @@ RAMBLE.Pages = (function ($) {
         return html;
     }
 
+    function userpage(options) {
+        var html = $('<div id="userpage"></div>'),
+            defaults = { },
+            opts = $.extend(defaults, options),
+            sql = [];
+        sql[0] = {
+            type: "indiv",
+            query: "users",
+            keys: ["id", "username", "date_joined"],
+            each: {
+                "user_info": ["email"],
+                "user_lastlogin": ["lastlogin"]
+            },
+            where: ["id", opts.user_id]
+        };
+        $.ajax({
+            url: "db.php",
+            data: {
+                options: JSON.stringify(sql)
+            },
+            dataType: "json",
+            beforeSend: function () {
+                // add loading gif
+                html.css('text-align', 'center');
+                html.html('<img src="images/loading.gif" />');
+            },
+            success: function (data) {
+            }
+        });
+
+        return html;
+    }
+
     function group_order() {
         var html = $('<div id="group_order"></div>'),
             sql = [];
@@ -518,6 +551,9 @@ RAMBLE.Pages = (function ($) {
             break;
         case "thread":
             $(element).html(thread(options));
+            break;
+        case "user":
+            $(element).html(userpage(options));
             break;
         case "group_order":
             $(element).html(group_order());

@@ -32,14 +32,16 @@ class RambleDB
             "users" => array(
                 "num_posts" => "(SELECT COUNT(*) FROM posts WHERE users.id = posts.user_id) + (SELECT COUNT(*) FROM threads WHERE users.id = threads.user_id)"
             ),
-            "forum_groups" => array()
+            "forum_groups" => array(),
+            "user_info" => array(),
+            "user_lastlogin" => array()
         );
 
         $this->tables = array("threads", "posts", "forums", "forum_groups", "users");
 
         $this->key_types = array(
             "numbers" => array("id", "pages", "num_replies", "num_threads", "num_posts"),
-            "dates" => array("date_posted", "date_joined")
+            "dates" => array("date_posted", "date_joined", "lastlogin")
         );
     }
 
@@ -69,6 +71,11 @@ class RambleDB
         }
     }
 
+    private function is_subtable_of($sub, $table) {
+        $subsplit = explode("_", $sub);
+        return ($this->to_singular($table) === $subsplit[0]);
+    }
+
     // construct a query given some options
     public function construct($options)
     {
@@ -84,7 +91,14 @@ class RambleDB
             if ($table === "last_post") { // skip because processed separately
                 continue;
             }
-            $joins[] = sprintf("INNER JOIN %s ON %s.id=%s.%s_id", $table, $table, $options->query, $this->to_singular($table));
+            $tsplit = explode("_", $table);
+            // check if a subtable (e.g. user_info)
+            if ($this->is_subtable_of($table, $options->query)) {
+                $joins[] = sprintf("INNER JOIN %s ON %s.%s_id=%s.id", $table, $table,
+                    $this->to_singular($options->query), $options->query);
+            } else {
+                $joins[] = sprintf("INNER JOIN %s ON %s.id=%s.%s_id", $table, $table, $options->query, $this->to_singular($table));
+            }
             foreach ($keys as $key) {
                 $selects[] = $this->key_to_sql($table, $key);
             }
@@ -158,7 +172,12 @@ class RambleDB
                         if ($table === $options->query) {
                             $result[$key] = $this->process_type($key, $value);
                         } else {
-                            $result[$this->to_singular($table)][$key] = $this->process_type($key, $value);
+                            if($this->is_subtable_of($table, $options->query)) {
+                                $tsplit = explode("_", $table);
+                                $result[$tsplit[1]][$key] = $this->process_type($key, $value);
+                            } else {
+                                $result[$this->to_singular($table)][$key] = $this->process_type($key, $value);
+                            }
                         }
                     }
                 }

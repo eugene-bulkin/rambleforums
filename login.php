@@ -49,7 +49,7 @@ function process_registration($DBH)
         $STH->execute(array($user_id));
 
         // Add entry into `user_lastlogins` table
-        $STH = $DBH->prepare("INSERT INTO user_lastlogins (user_id, lastlogin) VALUES (?, NOW())");
+        $STH = $DBH->prepare("INSERT INTO user_lastlogin (user_id, lastlogin) VALUES (?, NOW())");
         $STH->execute(array($user_id));
 
         $DBH->commit();
@@ -89,7 +89,7 @@ function process_login($DBH)
         $_SESSION['user_id'] = $user->id;
 
         // Update last login
-        $STH = $DBH->prepare("UPDATE user_lastlogins SET lastlogin=NOW() WHERE user_id=?");
+        $STH = $DBH->prepare("UPDATE user_lastlogin SET lastlogin=NOW() WHERE user_id=?");
         $STH->execute(array($user->id));
 
         return true;

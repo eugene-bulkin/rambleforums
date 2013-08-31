@@ -131,7 +131,7 @@ CREATE TABLE `user_info` (
 -- Table structure for table `user_lastlogins`
 --
 
-DROP TABLE IF EXISTS `user_lastlogins`;
+DROP TABLE IF EXISTS user_lastlogin;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_lastlogins` (
