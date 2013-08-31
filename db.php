@@ -22,12 +22,9 @@ class RambleDB
         $this->special_keys = array(
             "threads" => array(
                 "num_replies" => "SELECT COUNT(*) FROM posts WHERE posts.thread_id = threads.id",
-                "pages" => "SELECT CEIL(COUNT(*) / ?) FROM posts WHERE posts.thread_id = threads.id",
-                "last_date_posted" => "MAX(threads.date_posted)"
+                "pages" => "SELECT CEIL(COUNT(*) / ?) FROM posts WHERE posts.thread_id = threads.id"
             ),
-            "posts" => array(
-                "last_date_posted" => "MAX(posts.date_posted)"
-            ),
+            "posts" => array(),
             "forums" => array(
                 "num_threads" => "SELECT COUNT(*) FROM threads WHERE threads.forum_id = forums.id",
                 "pages" => "SELECT CEIL(COUNT(*) / ?) FROM threads WHERE threads.forum_id = forums.id"
@@ -42,7 +39,7 @@ class RambleDB
 
         $this->key_types = array(
             "numbers" => array("id", "pages", "num_replies", "num_threads", "num_posts"),
-            "dates" => array("last_date_posted", "date_posted", "date_joined")
+            "dates" => array("date_posted", "date_joined")
         );
     }
 
@@ -101,17 +98,15 @@ class RambleDB
             }
             $result .= sprintf(" WHERE %s%s=?", $wheretable, $options->where[0]);
         }
-        if ($options->type === "list") {
-            if (array_key_exists("order", $options)) {
-                $result .= sprintf(" ORDER BY %s %s", $options->order[0], $options->order[1]);
-                if ($options->paginate) {
-                    $page = $options->paginate[0];
-                    $pp = $options->paginate[1];
+        if (array_key_exists("order", $options)) {
+            $result .= sprintf(" ORDER BY %s %s", $options->order[0], $options->order[1]);
+        }
+        if ($options->type === "list" && array_key_exists("paginate", $options)) {
+            $page = $options->paginate[0];
+            $pp = $options->paginate[1];
 
-                    $result .= sprintf(" LIMIT %s, %s", $pp * ($page - 1), $pp);
-                }
-            }
-        } else {
+            $result .= sprintf(" LIMIT %s, %s", $pp * ($page - 1), $pp);
+        } elseif ($options->type === "indiv") {
             $result .= " LIMIT 1";
         }
 
@@ -155,7 +150,7 @@ class RambleDB
 
             if ($options->type === "indiv") {
                 $RES = $STH->fetch(PDO::FETCH_OBJ);
-                if ($RES->{$options->query . ".id"} !== null) {
+                if ($RES && $RES->{$options->query . ".id"} !== null) {
                     foreach ($RES as $fullkey => $value) {
                         $keyexp = explode(".", $fullkey);
                         $table = $keyexp[0];
@@ -187,34 +182,42 @@ class RambleDB
 
                     // process last_post
                     if (array_key_exists("last_post", $options->each)) {
-                        // process last post in thread
-                        $opts = new stdClass();
-                        $opts->type = "indiv";
-                        $opts->query = "posts";
-                        $opts->keys = array("id", "last_date_posted"); // last_date_posted must be in there or it won't find the last post
-                        $opts->each = array("users" => array("id", "username"));
                         if ($options->query === "threads") {
+                            // process last post in thread
+                            $opts = new stdClass();
+                            $opts->type = "indiv";
+                            $opts->query = "posts";
+                            $opts->keys = array("id", "date_posted");
+                            $opts->each = array("users" => array("id", "username"));
                             $opts->where = array("thread_id", $row_result["id"]);
+                            $opts->order = array("posts.date_posted", "DESC");
+                            $q = $this->query(array($opts));
+                            $row_result["last_post"] = $q[0];
+                        } elseif ($options->query === "forums") {
+                            $opts = new stdClass();
+                            $opts->type = "indiv";
+                            $opts->query = "posts";
+                            $opts->keys = array("id", "date_posted");
+                            $opts->each = array("users" => array("id", "username"));
+                            $opts->where = array("threads.forum_id", $row_result["id"]);
+                            $opts->order = array("posts.date_posted", "DESC");
+                            $opts->each["threads"] = array("id", "title");
                             $q = $this->query(array($opts));
                             $lastpost = $q[0];
-                            $row_result["last_post"] = $lastpost;
-                        } elseif ($options->query === "forums") {
-                            $opts->where = array("threads.forum_id", $row_result["id"]);
-                            $opts->each["threads"] = array();
-                            $lastpost = $this->query( array( $opts ) )[0];
-                            $lpdate = DateTime::createFromFormat("F d, Y h:i:s A", $lastpost["last_date_posted"]);
+                            $lpdate = DateTime::createFromFormat("F d, Y h:i:s A", $lastpost["date_posted"]);
                             // also find last thread
                             $opts = new stdClass();
                             $opts->type = "indiv";
                             $opts->query = "threads";
-                            $opts->keys = array("id", "last_date_posted");
-                            $opts->each = array( "users" => array("id", "username") );
+                            $opts->keys = array("id", "date_posted");
+                            $opts->each = array("users" => array("id", "username"));
                             $opts->where = array("forum_id", $row_result["id"]);
-                            $q = $this->query( array( $opts ) );
+                            $opts->order = array("threads.date_posted", "DESC");
+                            $q = $this->query(array($opts));
                             $lastthread = $q[0];
-                            $ltdate = DateTime::createFromFormat("F d, Y h:i:s A", $lastthread["last_date_posted"]);
+                            $ltdate = DateTime::createFromFormat("F d, Y h:i:s A", $lastthread["date_posted"]);
                             // check if both dates are available
-                            if($ltdate && $lpdate) {
+                            if ($ltdate && $lpdate) {
                                 if ($ltdate > $lpdate) {
                                     $row_result["last_post"] = $lastthread;
                                     $row_result["last_post"]["last_type"] = "thread";
@@ -224,10 +227,10 @@ class RambleDB
                                 }
                             } else {
                                 // otherwise return the one that exists
-                                if($ltdate) {
+                                if ($ltdate) {
                                     $row_result["last_post"] = $lastthread;
                                     $row_result["last_post"]["last_type"] = "thread";
-                                } elseif($lpdate) {
+                                } elseif ($lpdate) {
                                     $row_result["last_post"] = $lastpost;
                                     $row_result["last_post"]["last_type"] = "post";
                                 } else {
