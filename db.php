@@ -91,7 +91,6 @@ class RambleDB
             if ($table === "last_post") { // skip because processed separately
                 continue;
             }
-            $tsplit = explode("_", $table);
             // check if a subtable (e.g. user_info)
             if ($this->is_subtable_of($table, $options->query)) {
                 $joins[] = sprintf("INNER JOIN %s ON %s.%s_id=%s.id", $table, $table,
