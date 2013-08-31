@@ -89,7 +89,7 @@ class RambleDB
                 $selects[] = $this->key_to_sql($table, $key);
             }
         }
-        $result = sprintf("SELECT %s FROM %s %s", implode(", ", $selects), $options->query, implode(" ", $joins));
+        $result = "SELECT " . implode(", ", $selects) . " FROM " . $options->query . " " . implode(" ", $joins);
         if (array_key_exists("where", $options)) {
             if (count(explode(".", $options->where[0])) > 1) {
                 $wheretable = "";
