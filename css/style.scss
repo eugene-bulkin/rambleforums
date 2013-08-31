@@ -541,3 +541,54 @@ div.post_foot {
         text-align: right;
     }
 }
+
+/* User Page display */
+#userpage {
+    width: 60%;
+    margin: 0 auto;
+}
+
+#user_body {
+    width: 100%;
+
+    border: 2px solid $dark-blue;
+
+    border-radius: 10px;
+    background-color: $light-blue;
+    padding: 10px;
+
+    h1 {
+        text-align: center;
+        font-size: 14pt;
+        margin-bottom: 4px;
+    }
+}
+
+#user_info {
+    width: 40%;
+    margin: 0 auto;
+
+    table {
+        width: 100%;
+        font-size: 10pt;
+
+        border-radius: 20px;
+        overflow: hidden;
+
+        tr:nth-child(odd) {
+            background-color: darken($light-blue, 5%);
+        }
+
+        th {
+            text-align: right;
+
+            &::after {
+                content: ":";
+            }
+        }
+
+        th, td {
+            padding: 4px 8px;
+        }
+    }
+}

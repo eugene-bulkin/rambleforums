@@ -404,6 +404,14 @@ RAMBLE.Pages = (function ($) {
                 html.html('<img src="images/loading.gif" />');
             },
             success: function (data) {
+                var template,
+                    user = data[0];
+                // remove loading gif
+                html.html('');
+                html.attr('style', null);
+                // apply template
+                template = new RAMBLE.Template.Template("user");
+                html.html(template.apply(user));
             }
         });
 
