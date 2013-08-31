@@ -36,7 +36,7 @@
             {{^is_post}}
             <a class="lp_link" id="lpid{{id}}">{{title}}</a>
             {{/is_post}}
-            by <a>{{user.username}}</a>
+            by <a class="user_link" href="user_{{user.id}}">{{user.username}}</a>
             <br/>
             on <span class="date">{{date_posted}}</span>
         </td>

@@ -1,6 +1,9 @@
 <?php
 require 'config.inc.php';
+require 'dbapi.php';
 session_start();
+
+$SQL = new RambleDB($DBH, $_config);
 
 function logged_in()
 {
@@ -21,12 +24,20 @@ function print_login_links()
     }
 }
 
-function print_profile_info()
+function print_profile_info($SQL)
 {
     if (logged_in()) {
+        $options = new stdClass();
+        $options->type = "indiv";
+        $options->query = "users";
+        $options->keys = array("id", "username");
+        $options->where = array("id", $_SESSION["user_id"]);
+        $options->each = array();
+        $query = $SQL->query(array($options));
+        $user = $query[0];
         ?>
         <ul>
-            <li><a>Username</a></li>
+            <li><a class="user_link" href="user_<?php echo $user["id"]; ?>"><?php echo $user["username"]; ?></a></li>
             <li><a>Edit Profile</a></li>
         </ul>
     <?php
@@ -77,7 +88,7 @@ function print_profile_info()
     </div>
     <div id="userinfo">
         <div id="proflinks">
-            <?php print_profile_info(); ?>
+            <?php print_profile_info($SQL); ?>
         </div>
         <div id="loginlinks">
             <ul>

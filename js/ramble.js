@@ -15,6 +15,14 @@ var RAMBLE = (function ($) {
         } else {
             RAMBLE.Pages.load("forums", "#page", null, true);
         }
+
+        // bind user links
+        $('.user_link').on('click', function () {
+            RAMBLE.Pages.load("user", "#page", {
+                user_id: $(this).attr('href').replace("user_", "")
+            });
+            return false;
+        });
     }
 
     return {

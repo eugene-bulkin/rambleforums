@@ -148,6 +148,13 @@ RAMBLE.Pages = (function ($) {
                         thread_id: this.id.replace("lpid", "")
                     });
                 });
+                // user links
+                $('.user_link').on('click', function () {
+                    RAMBLE.Pages.load("user", "#page", {
+                        user_id: $(this).attr('href').replace("user_", "")
+                    });
+                    return false;
+                });
             }
         });
 
@@ -219,6 +226,14 @@ RAMBLE.Pages = (function ($) {
                     RAMBLE.Pages.load("thread", "#page", {
                         thread_id: this.id.replace("tlid", "")
                     });
+                });
+
+                // user links
+                $('.user_link').on('click', function () {
+                    RAMBLE.Pages.load("user", "#page", {
+                        user_id: $(this).attr('href').replace("user_", "")
+                    });
+                    return false;
                 });
 
                 page_links(opts.page, forum.pages, "forum", opts.forum_id);
@@ -329,6 +344,14 @@ RAMBLE.Pages = (function ($) {
                     RAMBLE.Pages.load("threads", "#page", {
                         forum_id: e.data
                     });
+                });
+
+                // user links
+                $('.user_link').on('click', function () {
+                    RAMBLE.Pages.load("user", "#page", {
+                        user_id: $(this).attr('href').replace("user_", "")
+                    });
+                    return false;
                 });
 
                 page_links(opts.page, thread.pages, "thread", opts.thread_id);

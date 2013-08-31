@@ -20,10 +20,10 @@
         <td><a>{{user.username}}</a></td>
         <td>{{num_replies}}</td>
         {{#last_post}}
-        <td>by <a>{{last_post.user.username}}</a><br/><span class="date">{{last_post.last_date_posted}}</span></td>
+        <td>by <a class="user_link" href="user_{{last_post.user.id}}">{{last_post.user.username}}</a><br/><span class="date">{{last_post.last_date_posted}}</span></td>
         {{/last_post}}
         {{^last_post}}
-        <td>by <a>{{user.username}}</a><br/><span class="date">{{date_posted}}</span></td>
+        <td>by <a class="user_link" href="user_{{user.id}}">{{user.username}}</a><br/><span class="date">{{date_posted}}</span></td>
         {{/last_post}}
     </tr>
     {{/threads}}

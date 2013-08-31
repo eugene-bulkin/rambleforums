@@ -89,6 +89,7 @@ body {
 a {
     color: $blue;
     cursor: pointer;
+    text-decoration: none;
     &:hover {
         color: darken($blue, 5%);
     }

@@ -8,7 +8,8 @@ body {
 
 a {
     color: #0066cc;
-    cursor: pointer; }
+    cursor: pointer;
+    text-decoration: none; }
     a:hover {
         color: #0059b3; }
     a:active {
