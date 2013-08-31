@@ -136,9 +136,16 @@ RAMBLE.Pages = (function ($) {
                 }
                 html.html(template.apply(template_data));
                 // process bindings
+                // forum links
                 $('.forum_link').on('click', function () {
                     RAMBLE.Pages.load("threads", "#page", {
                         forum_id: this.id.replace("flid", "")
+                    });
+                });
+                // last post links
+                $('.lp_link').on('click', function () {
+                    RAMBLE.Pages.load("thread", "#page", {
+                        thread_id: this.id.replace("lpid", "")
                     });
                 });
             }

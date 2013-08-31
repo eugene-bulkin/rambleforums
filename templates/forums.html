@@ -29,7 +29,17 @@
             {{num_threads}}
         </td>
         {{#last_post}}
-        <td>by <a>{{user.username}}</a><br/><span class="date">{{date_posted}}</span></td>
+        <td>
+            {{#is_post}}
+            in <a class="lp_link" id="lpid{{thread.id}}">{{thread.title}}</a>
+            {{/is_post}}
+            {{^is_post}}
+            <a class="lp_link" id="lpid{{id}}">{{title}}</a>
+            {{/is_post}}
+            by <a>{{user.username}}</a>
+            <br/>
+            on <span class="date">{{date_posted}}</span>
+        </td>
         {{/last_post}}
         {{^last_post}}
         <td>No posts in this forum.</td>

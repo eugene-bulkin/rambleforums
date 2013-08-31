@@ -98,7 +98,7 @@ class RambleDB
             }
             $result .= sprintf(" WHERE %s%s=?", $wheretable, $options->where[0]);
         }
-        if (array_key_exists("order", $options)) {
+        if (array_key_exists("order", $options) && $options->order) {
             $result .= sprintf(" ORDER BY %s %s", $options->order[0], $options->order[1]);
         }
         if ($options->type === "list" && array_key_exists("paginate", $options)) {
@@ -209,7 +209,7 @@ class RambleDB
                             $opts = new stdClass();
                             $opts->type = "indiv";
                             $opts->query = "threads";
-                            $opts->keys = array("id", "date_posted");
+                            $opts->keys = array("id", "title", "date_posted");
                             $opts->each = array("users" => array("id", "username"));
                             $opts->where = array("forum_id", $row_result["id"]);
                             $opts->order = array("threads.date_posted", "DESC");
@@ -220,19 +220,19 @@ class RambleDB
                             if ($ltdate && $lpdate) {
                                 if ($ltdate > $lpdate) {
                                     $row_result["last_post"] = $lastthread;
-                                    $row_result["last_post"]["last_type"] = "thread";
+                                    $row_result["last_post"]["is_post"] = false;
                                 } else {
                                     $row_result["last_post"] = $lastpost;
-                                    $row_result["last_post"]["last_type"] = "post";
+                                    $row_result["last_post"]["is_post"] = true;
                                 }
                             } else {
                                 // otherwise return the one that exists
                                 if ($ltdate) {
                                     $row_result["last_post"] = $lastthread;
-                                    $row_result["last_post"]["last_type"] = "thread";
+                                    $row_result["last_post"]["is_post"] = false;
                                 } elseif ($lpdate) {
                                     $row_result["last_post"] = $lastpost;
-                                    $row_result["last_post"]["last_type"] = "post";
+                                    $row_result["last_post"]["is_post"] = true;
                                 } else {
                                     $row_result["last_post"] = null;
                                 }
