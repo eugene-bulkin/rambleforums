@@ -2,51 +2,6 @@
 require 'config.inc.php';
 require 'dbapi.php';
 session_start();
-
-$SQL = new RambleDB($DBH, $_config);
-
-function logged_in()
-{
-    return array_key_exists("user_id", $_SESSION);
-}
-
-function print_login_links()
-{
-    if (logged_in()) {
-        ?>
-        <li><a id="logoutlink">Logout</a></li>
-    <?php
-    } else {
-        ?>
-        <li><a id="loginlink">Login</a></li>
-        <li><a id="registerlink">Register</a></li>
-    <?php
-    }
-}
-
-function print_profile_info($SQL)
-{
-    if (logged_in()) {
-        $options = new stdClass();
-        $options->type = "indiv";
-        $options->query = "users";
-        $options->keys = array("id", "username");
-        $options->where = array("id", $_SESSION["user_id"]);
-        $options->each = array();
-        $query = $SQL->query(array($options));
-        $user = $query[0];
-        ?>
-        <ul>
-            <li><a class="user_link" href="user_<?php echo $user["id"]; ?>"><?php echo $user["username"]; ?></a></li>
-            <li><a class="edit_prof" id="ep_<?php echo $user["id"]; ?>">Edit Profile</a></li>
-        </ul>
-    <?php
-    } else {
-        ?>
-        Not logged in. Please login or register to participate.
-    <?php
-    }
-}
 ?>
 <html>
 <head>
@@ -82,21 +37,5 @@ function print_profile_info($SQL)
     <link href="css/style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<div id="header">
-    <div id="title">
-        <a><?php echo $_config->get('ramble.forum_name'); ?></a>
-    </div>
-    <div id="userinfo">
-        <div id="proflinks">
-            <?php print_profile_info($SQL); ?>
-        </div>
-        <div id="loginlinks">
-            <ul>
-                <?php print_login_links(); ?>
-            </ul>
-        </div>
-    </div>
-</div>
-<div id="page"></div>
 </body>
 </html>

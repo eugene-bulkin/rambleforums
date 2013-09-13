@@ -627,6 +627,76 @@ RAMBLE.Pages = (function ($) {
         return html;
     }
 
+    function main(options) {
+        var html = $('body'),
+            defaults = { },
+            opts = $.extend(defaults, options),
+            sql = [],
+            logged_in = (opts.user_id !== false);
+        // get forum name
+        sql[0] = {
+            type: "indiv",
+            query: "config",
+            keys: ["ramble.forum_name"]
+        };
+        // logged in
+        if (logged_in) {
+            sql[1] = {
+                type: "indiv",
+                query: "users",
+                keys: ["id", "username"],
+                each: {},
+                where: ["id", opts.user_id]
+            };
+        }
+        $.ajax({
+            url: "db.php",
+            data: {
+                options: JSON.stringify(sql)
+            },
+            dataType: "json",
+            async: false, // must block
+            success: function (data) {
+                var template,
+                    forum_name = data[0].forum_name;
+                console.log(data);
+                template = new RAMBLE.Template.Template("main");
+                html.html(template.apply({
+                    forum_name: forum_name,
+                    user: data[1] || false
+                }));
+
+                RAMBLE.Login.init();
+
+                $('#title').find('a').on('click', function () {
+                    RAMBLE.Pages.load("forums", "#page");
+                });
+
+                // page already loaded! that is, we just refreshed
+                if (history.state && history.state.rambleforums) {
+                    RAMBLE.Pages.load(history.state.mode, history.state.element, history.state.options, true);
+                } else {
+                    RAMBLE.Pages.load("forums", "#page", null, true);
+                }
+
+                // bind user links
+                $('.user_link').on('click', function () {
+                    RAMBLE.Pages.load("user", "#page", {
+                        user_id: $(this).attr('href').replace("user_", "")
+                    });
+                    return false;
+                });
+                $(".edit_prof").on('click', function () {
+                    RAMBLE.Pages.load("editprofile", "#page", {
+                        user_id: $(this).attr('id').replace("ep_", "")
+                    });
+                });
+            }
+        });
+
+        return html;
+    }
+
     function processHistory(event) {
         var s = event.originalEvent.state;
         if (s) {
@@ -663,6 +733,9 @@ RAMBLE.Pages = (function ($) {
             break;
         case "group_order":
             $(element).html(group_order());
+            break;
+        case "main":
+            main(options);
             break;
         default:
             break;
