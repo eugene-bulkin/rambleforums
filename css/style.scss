@@ -594,3 +594,68 @@ div.post_foot {
         }
     }
 }
+
+/* Edit Profile */
+#editprofile {
+    width: 70%;
+    margin: 0 auto;
+    padding: 1%;
+}
+
+#profile_form {
+    label {
+        padding: 1px 1% 1px 5%;
+        text-align: right;
+        font-weight: bold;
+        font-size: 12pt;
+    }
+
+    input {
+        height: 35px;
+        width: 100%;
+        display: table-cell;
+
+        padding: 0 6px;
+        font-size: 12pt;
+
+        @include input-style;
+
+        border-radius: 8px;
+    }
+
+    tbody {
+        td {
+            padding-right: 20px;
+        }
+    }
+}
+
+#profsub {
+    text-align: center;
+
+    button {
+        padding: 4px;
+        width: 70%;
+    }
+}
+
+#user_panel {
+    width: 100%;
+
+    border: 2px solid $dark-blue;
+
+    border-radius: 10px;
+    background-color: $light-blue;
+    padding: 10px;
+
+    h1 {
+        text-align: center;
+        font-size: 14pt;
+        margin-bottom: 4px;
+    }
+
+    #results {
+        padding: 4px;
+        text-align: center;
+    }
+}

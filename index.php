@@ -38,7 +38,7 @@ function print_profile_info($SQL)
         ?>
         <ul>
             <li><a class="user_link" href="user_<?php echo $user["id"]; ?>"><?php echo $user["username"]; ?></a></li>
-            <li><a>Edit Profile</a></li>
+            <li><a class="edit_prof" id="ep_<?php echo $user["id"]; ?>">Edit Profile</a></li>
         </ul>
     <?php
     } else {

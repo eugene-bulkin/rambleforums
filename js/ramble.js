@@ -23,6 +23,11 @@ var RAMBLE = (function ($) {
             });
             return false;
         });
+        $(".edit_prof").on('click', function () {
+            RAMBLE.Pages.load("editprofile", "#page", {
+                user_id: $(this).attr('id').replace("ep_", "")
+            });
+        });
     }
 
     return {

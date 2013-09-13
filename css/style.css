@@ -435,3 +435,62 @@ div.post_foot {
                 content: ":"; }
         #user_info table th, #user_info table td {
             padding: 4px 8px; }
+
+/* Edit Profile */
+#editprofile {
+    width: 70%;
+    margin: 0 auto;
+    padding: 1%; }
+
+#profile_form label {
+    padding: 1px 1% 1px 5%;
+    text-align: right;
+    font-weight: bold;
+    font-size: 12pt; }
+#profile_form input {
+    height: 35px;
+    width: 100%;
+    display: table-cell;
+    padding: 0 6px;
+    font-size: 12pt;
+    background-color: #f7f9fa;
+    border: 1px solid #d9ecff;
+    color: #004c99;
+    border-radius: 4px;
+    border-radius: 8px; }
+    #profile_form input:hover {
+        border-color: #a6d2ff; }
+    #profile_form input:focus {
+        border-color: #73b9ff;
+        outline: none;
+        background-color: #f7f7f7; }
+    #profile_form input::-webkit-input-placeholder {
+        color: #a6d2ff; }
+    #profile_form input:-moz-placeholder {
+        color: #a6d2ff; }
+    #profile_form input::-moz-placeholder {
+        color: #a6d2ff; }
+    #profile_form input:-ms-input-placeholder {
+        color: #a6d2ff; }
+#profile_form tbody td {
+    padding-right: 20px; }
+
+#profsub {
+    text-align: center; }
+    #profsub button {
+        padding: 4px;
+        width: 70%; }
+
+#user_panel {
+    width: 100%;
+    border: 2px solid #003366;
+    border-radius: 10px;
+    background-color: #e5f2ff;
+    padding: 10px; }
+    #user_panel h1 {
+        text-align: center;
+        font-size: 14pt;
+        margin-bottom: 4px; }
+    #user_panel #results {
+        padding: 4px;
+        text-align: center; }

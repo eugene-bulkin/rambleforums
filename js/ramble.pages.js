@@ -441,6 +441,78 @@ RAMBLE.Pages = (function ($) {
         return html;
     }
 
+    function editprofile(options) {
+        var html = $('<div id="editprofile"></div>'),
+            defaults = { },
+            opts = $.extend(defaults, options),
+            sql = [];
+        sql[0] = {
+            type: "indiv",
+            query: "users",
+            keys: ["id", "username"],
+            each: {
+                "user_info": ["email"]
+            },
+            where: ["id", opts.user_id]
+        };
+        $.ajax({
+            url: "db.php",
+            data: {
+                options: JSON.stringify(sql)
+            },
+            dataType: "json",
+            beforeSend: function (xhr) {
+                // add loading gif
+                html.css('text-align', 'center');
+                html.html('<img src="images/loading.gif" />');
+                $.ajax({
+                    url: "verify.php",
+                    data: {
+                        "id": opts.user_id,
+                        "process": "edit_profile"
+                    },
+                    dataType: "json",
+                    type: "post",
+                    success: function (data) {
+                        // if we don't have permission, stop request
+                        if (!data) {
+                            xhr.abort();
+                        }
+                    }
+                });
+            },
+            success: function (data) {
+                var template,
+                    user = data[0];
+                // remove loading gif
+                html.html('');
+                html.attr('style', null);
+                // apply template
+                template = new RAMBLE.Template.Template("editprofile");
+                html.html(template.apply(user));
+
+                $("#profsub").on('click', function () {
+                    var form = $("#profile_form");
+                    form.ajaxSubmit({
+                        dataType: "json",
+                        type: "POST",
+                        url: "panel.php?mode=user",
+                        success: function (data) {
+                            if (data === true) { // success!
+                                $("#results").html("Profile successfully updated!");
+                            } else {
+                                console.log(data);
+                            }
+                        }
+                    });
+                    return false;
+                });
+            }
+        });
+
+        return html;
+    }
+
     function group_order() {
         var html = $('<div id="group_order"></div>'),
             sql = [];
@@ -585,6 +657,9 @@ RAMBLE.Pages = (function ($) {
             break;
         case "user":
             $(element).html(userpage(options));
+            break;
+        case "editprofile":
+            $(element).html(editprofile(options));
             break;
         case "group_order":
             $(element).html(group_order());

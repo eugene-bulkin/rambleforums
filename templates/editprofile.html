@@ -1,0 +1,27 @@
+<div id="user_panel">
+    <h1>Edit your Profile</h1>
+
+    <div id="user_info">
+        <form id="profile_form">
+            <input type="hidden" name="uid" value="{{id}}"/>
+            <table cellspacing="0">
+                <tbody>
+                <tr>
+                    <th><label for="profile-email">Email</label></th>
+                    <td><input type="text" id="profile-email" value="{{info.email}}" name="email"/></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="2" id="profsub">
+                        <button type="submit"
+                                class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-all">Submit
+                        </button>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
+        </form>
+        <div id="results"></div>
+    </div>
+</div>
