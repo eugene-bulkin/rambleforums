@@ -6,6 +6,9 @@ body {
     font: 10pt Verdana, sans-serif;
     background-color: white; }
 
+table {
+    border-spacing: 0px; }
+
 a {
     color: #0066cc;
     cursor: pointer;

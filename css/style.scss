@@ -86,6 +86,10 @@ body {
     background-color: adjust-color($blue, $lightness: 97.5%);
 }
 
+table {
+    border-spacing: 0px;
+}
+
 a {
     color: $blue;
     cursor: pointer;
