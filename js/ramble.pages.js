@@ -627,8 +627,8 @@ RAMBLE.Pages = (function ($) {
         return html;
     }
 
-    function main(options) {
-        var html = $('body'),
+    function header(options) {
+        var html = $('#header'),
             defaults = { },
             opts = $.extend(defaults, options),
             sql = [],
@@ -655,12 +655,20 @@ RAMBLE.Pages = (function ($) {
                 options: JSON.stringify(sql)
             },
             dataType: "json",
-            async: false, // must block
+            beforeSend: function () {
+                if (opts.login === true) {
+                    // add loading gif
+                    $("#userinfo").css('text-align', 'center');
+                    $("#userinfo").html('<img src="images/loading.gif" />');
+                }
+            },
             success: function (data) {
                 var template,
                     forum_name = data[0].forum_name;
-                console.log(data);
-                template = new RAMBLE.Template.Template("main");
+                // cancel out loading gif
+                $("#userinfo").attr('style', null);
+                // apply template
+                template = new RAMBLE.Template.Template("header");
                 html.html(template.apply({
                     forum_name: forum_name,
                     user: data[1] || false
@@ -734,8 +742,8 @@ RAMBLE.Pages = (function ($) {
         case "group_order":
             $(element).html(group_order());
             break;
-        case "main":
-            main(options);
+        case "header":
+            header(options);
             break;
         default:
             break;

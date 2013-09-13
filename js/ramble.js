@@ -9,9 +9,8 @@ var RAMBLE = (function ($) {
             },
             dataType: "json",
             type: "post",
-            async: false,
             success: function (data) {
-                RAMBLE.Pages.load("main", "body", {user_id: data});
+                RAMBLE.Pages.load("header", "#header", {user_id: data}, false, true);
             }
         });
     }

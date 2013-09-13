@@ -57,12 +57,12 @@ function process_registration($DBH)
         // Start login session
         $_SESSION['user_id'] = $user_id;
 
-        return true;
+        return array(true, $user_id);
 
     } catch (PDOException $e) {
         $DBH->rollback();
 
-        return process_error($e);
+        return array(false, process_error($e));
     }
 }
 
@@ -92,9 +92,9 @@ function process_login($DBH)
         $STH = $DBH->prepare("UPDATE user_lastlogin SET lastlogin=NOW() WHERE user_id=?");
         $STH->execute(array($user->id));
 
-        return true;
+        return array(true, $user->id);
     } catch (PDOException $e) {
-        return process_error($e);
+        return array(false, process_error($e));
     }
 }
 
@@ -108,7 +108,7 @@ switch ($mode) {
         break;
     case "logout":
         session_destroy();
-        $result = true;
+        $result = array(true, false);
         break;
     default:
         break;

@@ -17,9 +17,9 @@ RAMBLE.Login = (function ($) {
 
     function log_success(data) {
         // successful login
-        if (data === true) {
+        if (data[0] === true) {
             $('#dialog').dialog("close");
-            location.reload();
+            RAMBLE.Pages.load("header", "#header", {user_id: data[1], login: true}, false, true);
         } else {
             console.log(data);
         }
@@ -67,8 +67,8 @@ RAMBLE.Login = (function ($) {
                 url: "login.php?mode=logout",
                 dataType: "json",
                 success: function (data) {
-                    if (data === true) {
-                        location.reload();
+                    if (data[0] === true) {
+                        RAMBLE.Pages.load("header", "#header", {user_id: false, login: true}, false, true);
                     }
                 }
             });
