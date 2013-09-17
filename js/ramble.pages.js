@@ -773,6 +773,9 @@ RAMBLE.Pages = (function ($) {
                         user_id: $(this).attr('id').replace("ep_", "")
                     });
                 });
+                $(".admin_link").on('click', function () {
+                    RAMBLE.Pages.load("adminpanel", "#page");
+                });
             }
         });
 
