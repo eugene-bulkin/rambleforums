@@ -559,6 +559,11 @@ RAMBLE.Pages = (function ($) {
                 template = new RAMBLE.Template.Template("adminpanel");
                 html.html(template.apply(forum));
 
+                $("#grpord").on('click', function () {
+                    RAMBLE.Pages.load("group_order", "#page");
+                    return false;
+                });
+
                 $("#adminsub").on('click', function () {
                     var form = $("#admin_form");
                     form.ajaxSubmit({
