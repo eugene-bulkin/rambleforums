@@ -66,7 +66,7 @@ CREATE TABLE `forums` (
   UNIQUE KEY `name_UNIQUE` (`name`),
   KEY `forum_fgid_idx` (`fgid`),
   CONSTRAINT `forum_fgid` FOREIGN KEY (`fgid`) REFERENCES `forum_groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -112,6 +112,21 @@ CREATE TABLE `threads` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `user_groups`
+--
+
+DROP TABLE IF EXISTS `user_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_groups` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) DEFAULT NULL,
+  `perm_admin_panel` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `user_info`
 --
 
@@ -128,13 +143,13 @@ CREATE TABLE `user_info` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `user_lastlogins`
+-- Table structure for table `user_lastlogin`
 --
 
-DROP TABLE IF EXISTS user_lastlogin;
+DROP TABLE IF EXISTS `user_lastlogin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_lastlogins` (
+CREATE TABLE `user_lastlogin` (
   `user_id` int(11) NOT NULL,
   `lastlogin` datetime NOT NULL,
   KEY `ll_uid` (`user_id`),
@@ -154,8 +169,11 @@ CREATE TABLE `users` (
   `username` varchar(64) NOT NULL,
   `hash` varchar(64) NOT NULL,
   `ugid` int(11) NOT NULL DEFAULT '0',
+  `date_joined` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
+  UNIQUE KEY `username` (`username`),
+  KEY `ug_id` (`ugid`),
+  CONSTRAINT `ug_id` FOREIGN KEY (`ugid`) REFERENCES `user_groups` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -168,4 +186,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-07-17 12:47:34
+-- Dump completed on 2013-09-17 14:05:44

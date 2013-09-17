@@ -25,10 +25,11 @@ class RambleDB
             ),
             "forum_groups" => array(),
             "user_info" => array(),
-            "user_lastlogin" => array()
+            "user_lastlogin" => array(),
+            "user_groups" => array()
         );
 
-        $this->tables = array("threads", "posts", "forums", "forum_groups", "users");
+        $this->tables = array("threads", "posts", "forums", "forum_groups", "users", "user_groups");
 
         $this->key_types = array(
             "numbers" => array("id", "pages", "num_replies", "num_threads", "num_posts"),

@@ -19,7 +19,18 @@ RAMBLE.Login = (function ($) {
         // successful login
         if (data[0] === true) {
             $('#dialog').dialog("close");
-            RAMBLE.Pages.load("header", "#header", {user_id: data[1], login: true}, false, true);
+            $.ajax({
+                url: "verify.php",
+                data: {
+                    "process": "header",
+                    "vmodes": "logged_in;admin_panel"
+                },
+                dataType: "json",
+                type: "post",
+                success: function (data) {
+                    RAMBLE.Pages.load("header", "#header", {user_id: data.logged_in, admin_panel: data.admin_panel, login: true}, false, true);
+                }
+            });
         } else {
             console.log(data);
         }

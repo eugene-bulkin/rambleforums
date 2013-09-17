@@ -7,6 +7,9 @@
         <ul>
             <li><a class="user_link" href="user_{{id}}">{{username}}</a></li>
             <li><a class="edit_prof" id="ep_{{id}}">Edit Profile</a></li>
+            {{#admin}}
+            <li><a class="admin_link">Admin Panel</a></li>
+            {{/admin}}
         </ul>
         {{/user}}
         {{^user}}

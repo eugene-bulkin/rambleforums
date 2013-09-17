@@ -5,12 +5,13 @@ var RAMBLE = (function ($) {
         $.ajax({
             url: "verify.php",
             data: {
-                "process": "logged_in"
+                "process": "header",
+                "vmodes": "logged_in;admin_panel"
             },
             dataType: "json",
             type: "post",
             success: function (data) {
-                RAMBLE.Pages.load("header", "#header", {user_id: data}, false, true);
+                RAMBLE.Pages.load("header", "#header", {user_id: data.logged_in, admin_panel: data.admin_panel}, false, true);
             }
         });
     }

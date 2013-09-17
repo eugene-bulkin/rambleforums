@@ -671,7 +671,8 @@ RAMBLE.Pages = (function ($) {
                 template = new RAMBLE.Template.Template("header");
                 html.html(template.apply({
                     forum_name: forum_name,
-                    user: data[1] || false
+                    user: data[1] || false,
+                    admin: opts.admin_panel || false
                 }));
 
                 RAMBLE.Login.init();
