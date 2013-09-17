@@ -163,6 +163,14 @@ div#userinfo {
         right: 4px;
         text-align: right;
         line-height: 2em; }
+    div#userinfo img {
+        position: absolute;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%); }
     div#userinfo ul {
         list-style-type: none; }
     div#userinfo li {

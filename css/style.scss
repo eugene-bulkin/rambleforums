@@ -8,6 +8,38 @@ $input-border: lighten($blue, 52.5%);
 $input-border-hov: lighten($blue, 42.5%);
 $input-border-act: lighten($blue, 32.5%);
 
+// useful mixins
+
+@mixin transform($command) {
+    -webkit-transform: $command;
+    -ms-transform: $command;
+    transform: $command;
+}
+
+@mixin box-sizing {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+@mixin center($type) {
+    position: absolute;
+
+    @if $type == horiz {
+        left: 50%;
+        @include transform(translate(-50%, 0%));
+    } @else if $type == vert {
+        top: 50%;
+        @include transform(translate(0%, -50%));
+    } @else {
+        left: 50%;
+        top: 50%;
+        @include transform(translate(-50%, -50%));
+    }
+}
+
+// ramble mixins
+
 @mixin inline-li($div) {
     ul {
         list-style-type: none;
@@ -228,6 +260,11 @@ div#userinfo {
         right: 4px;
         text-align: right;
         line-height: 2em;
+    }
+
+    img {
+        position: absolute;
+        @include center(both);
     }
 
     @include inline-li(" | ");
