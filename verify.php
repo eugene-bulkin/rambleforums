@@ -10,6 +10,9 @@ function verify_edit_profile($given_id)
 
 function verify_admin_panel($SQL)
 {
+    if (!array_key_exists("user_id", $_SESSION)) {
+        return false;
+    }
     $uid = $_SESSION["user_id"];
 
     $opts = new stdClass();

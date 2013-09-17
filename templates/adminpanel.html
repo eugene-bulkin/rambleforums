@@ -1,19 +1,19 @@
-<div id="user_panel" class="panel_div">
-    <h1>Edit your Profile</h1>
+<div id="admin_panel" class="panel_div">
+    <h1>Admin Panel</h1>
 
-    <div id="user_info" class="info_div">
-        <form id="profile_form" class="panel_form">
-            <input type="hidden" name="uid" value="{{id}}"/>
+    <div id="forum_info" class="info_div">
+        <form id="admin_form" class="panel_form">
             <table>
                 <tbody>
                 <tr>
-                    <th><label for="profile-email">Email</label></th>
-                    <td><input type="text" id="profile-email" value="{{info.email}}" name="email"/></td>
+                    <th><label for="admin-forum-forum_name">Forum Name</label></th>
+                    <td><input type="text" id="admin-forum-forum_name" value="{{forum_name}}"
+                               name="ramble-forum_name"/></td>
                 </tr>
                 </tbody>
                 <tfoot>
                 <tr>
-                    <td colspan="2" id="profsub" class="panelsub">
+                    <td colspan="2" id="adminsub" class="panelsub">
                         <button type="submit"
                                 class="ui-button ui-widget ui-state-default ui-button-text-only ui-corner-all">Submit
                         </button>

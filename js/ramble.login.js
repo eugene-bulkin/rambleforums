@@ -80,6 +80,7 @@ RAMBLE.Login = (function ($) {
                 success: function (data) {
                     if (data[0] === true) {
                         RAMBLE.Pages.load("header", "#header", {user_id: false, login: true}, false, true);
+                        RAMBLE.Pages.load("forums", "#page", null, true);
                     }
                 }
             });

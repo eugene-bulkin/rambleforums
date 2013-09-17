@@ -607,7 +607,7 @@ div.post_foot {
     }
 }
 
-#user_info {
+#user_info, .info_div {
     width: 40%;
     margin: 0 auto;
 
@@ -636,14 +636,14 @@ div.post_foot {
     }
 }
 
-/* Edit Profile */
-#editprofile {
+/* Panels */
+.panel_wrapper {
     width: 70%;
     margin: 0 auto;
     padding: 1%;
 }
 
-#profile_form {
+.panel_form {
     label {
         padding: 1px 1% 1px 5%;
         text-align: right;
@@ -671,7 +671,7 @@ div.post_foot {
     }
 }
 
-#profsub {
+.panelsub {
     text-align: center;
 
     button {
@@ -680,7 +680,7 @@ div.post_foot {
     }
 }
 
-#user_panel {
+.panel_div {
     width: 100%;
 
     border: 2px solid $dark-blue;

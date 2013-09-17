@@ -442,7 +442,7 @@ RAMBLE.Pages = (function ($) {
     }
 
     function editprofile(options) {
-        var html = $('<div id="editprofile"></div>'),
+        var html = $('<div id="editprofile" class="panel_wrapper"></div>'),
             defaults = { },
             opts = $.extend(defaults, options),
             sql = [];
@@ -500,6 +500,58 @@ RAMBLE.Pages = (function ($) {
                         success: function (data) {
                             if (data === true) { // success!
                                 $("#results").html("Profile successfully updated!");
+                            } else {
+                                console.log(data);
+                            }
+                        }
+                    });
+                    return false;
+                });
+            }
+        });
+
+        return html;
+    }
+
+    function adminpanel() {
+        var html = $('<div id="admin_panel" class="panel_wrapper"></div>'),
+            sql = [];
+        // get forum information
+        sql[0] = {
+            type: "indiv",
+            query: "config",
+            keys: ["ramble.forum_name"]
+        };
+        $.ajax({
+            url: "db.php",
+            data: {
+                options: JSON.stringify(sql)
+            },
+            dataType: "json",
+            beforeSend: function () {
+                // add loading gif
+                html.css('text-align', 'center');
+                html.html('<img src="images/loading.gif" />');
+            },
+            success: function (data) {
+                var template,
+                    forum = data[0];
+                // remove loading gif
+                html.html('');
+                html.attr('style', null);
+                // apply template
+                template = new RAMBLE.Template.Template("adminpanel");
+                html.html(template.apply(forum));
+
+                $("#adminsub").on('click', function () {
+                    var form = $("#admin_form");
+                    form.ajaxSubmit({
+                        dataType: "json",
+                        type: "POST",
+                        url: "panel.php?mode=admin",
+                        success: function (data) {
+                            if (data === true) { // success!
+                                $("#results").html("Forums successfully updated!");
                             } else {
                                 console.log(data);
                             }
@@ -739,6 +791,9 @@ RAMBLE.Pages = (function ($) {
             break;
         case "editprofile":
             $(element).html(editprofile(options));
+            break;
+        case "adminpanel":
+            $(element).html(adminpanel());
             break;
         case "group_order":
             $(element).html(group_order());

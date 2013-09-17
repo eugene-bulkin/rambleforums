@@ -20,10 +20,28 @@ function edit_profile($DBH, $pdata)
     return true;
 }
 
+function admin_panel($SQL, $DBH, $pdata)
+{
+    if (!verify_admin_panel($SQL)) {
+        return array("success" => false);
+    }
+    try {
+        $query = "UPDATE config SET `value`=? WHERE `key`='ramble' AND `subkey`='forum_name'";
+        $STH = $DBH->prepare($query);
+        $STH->execute(array($pdata["ramble-forum_name"]));
+    } catch(PDOException $e) {
+        return $e->getMessage();
+    }
+    return true;
+}
+
 $result = null;
 switch ($_GET["mode"]) {
     case "user":
         $result = edit_profile($DBH, $_POST);
+        break;
+    case "admin":
+        $result = admin_panel($SQL, $DBH, $_POST);
         break;
     default:
         die();
