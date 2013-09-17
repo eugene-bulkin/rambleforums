@@ -528,10 +528,26 @@ RAMBLE.Pages = (function ($) {
                 options: JSON.stringify(sql)
             },
             dataType: "json",
-            beforeSend: function () {
+            beforeSend: function (xhr) {
                 // add loading gif
                 html.css('text-align', 'center');
                 html.html('<img src="images/loading.gif" />');
+                // verify admin
+                $.ajax({
+                    url: "verify.php",
+                    data: {
+                        "process": "header",
+                        "vmodes": "admin_panel"
+                    },
+                    dataType: "json",
+                    type: "post",
+                    success: function (data) {
+                        // if we don't have permission, stop request
+                        if (!data.admin_panel) {
+                            xhr.abort();
+                        }
+                    }
+                });
             },
             success: function (data) {
                 var template,
@@ -559,6 +575,11 @@ RAMBLE.Pages = (function ($) {
                     });
                     return false;
                 });
+            },
+            error: function (xhr, status) {
+                if (status === "abort") {
+                    html.html('You do not have permission to access this page.');
+                }
             }
         });
 
