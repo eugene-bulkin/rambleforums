@@ -568,6 +568,18 @@ RAMBLE.Pages = (function ($) {
                         success: function (data) {
                             if (data === true) { // success!
                                 $("#results").html("Forums successfully updated!");
+                                $.ajax({
+                                    url: "verify.php",
+                                    data: {
+                                        "process": "header",
+                                        "vmodes": "logged_in;admin_panel"
+                                    },
+                                    dataType: "json",
+                                    type: "post",
+                                    success: function (data) {
+                                        RAMBLE.Pages.load("header", "#header", {user_id: data.logged_in, admin_panel: data.admin_panel, from_admin: true}, false, true);
+                                    }
+                                });
                             } else {
                                 console.log(data);
                             }
@@ -754,11 +766,14 @@ RAMBLE.Pages = (function ($) {
                     RAMBLE.Pages.load("forums", "#page");
                 });
 
-                // page already loaded! that is, we just refreshed
-                if (history.state && history.state.rambleforums) {
-                    RAMBLE.Pages.load(history.state.mode, history.state.element, history.state.options, true);
-                } else {
-                    RAMBLE.Pages.load("forums", "#page", null, true);
+                // if we came from admin panel, do nothing
+                if (!opts.from_admin) {
+                    // page already loaded! that is, we just refreshed
+                    if (history.state && history.state.rambleforums) {
+                        RAMBLE.Pages.load(history.state.mode, history.state.element, history.state.options, true);
+                    } else {
+                        RAMBLE.Pages.load("forums", "#page", null, true);
+                    }
                 }
 
                 // bind user links
